@@ -1,0 +1,54 @@
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --font-montserrat: 'Montserrat', sans-serif;
+  --font-inter: 'Inter', sans-serif;
+}
+
+body {
+  font-family: var(--font-montserrat);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-montserrat);
+}
+
+/* Links */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Images */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Form elements */
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+input {
+  font-family: inherit;
+}
+
+/* Remove default focus outline and add custom one */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid #FF6B35;
+  outline-offset: 2px;
+} 
