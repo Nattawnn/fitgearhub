@@ -30,34 +30,61 @@ export default function Home() {
         <div className="container">
           <h2>Our Best Sellers</h2>
           <div className="products-grid">
-            <div className="product-card">
-              <Image src="/images/boxing-gloves.jpg" alt="Boxing Gloves" width={382} height={532} />
-              <h3>Boxing Gloves</h3>
-              <p className="product-tagline">Trusted performance for every punch.</p>
-              <p className="product-description">
-                Designed for both beginners and seasoned fighters, these gloves offer solid hand protection and comfort. 
-                Sourced from reliable brands known for durability in intense training and sparring sessions.
-              </p>
+            <div className="product-column">
+              <div className="product-card">
+                <Image 
+                  src="https://res.cloudinary.com/dstl8qazf/image/upload/v1746800160/b2zemgektesep1nqfirh.png" 
+                  alt="Boxing Gloves" 
+                  width={382} 
+                  height={532} 
+                />
+                <h3 className="product-title-overlay">Boxing Gloves</h3>
+              </div>
+              <div className="product-detail">
+                <p className="product-tagline">Trusted performance for every punch.</p>
+                <p className="product-description">
+                  Designed for both beginners and seasoned fighters, these gloves offer solid hand protection and comfort. 
+                  Sourced from reliable brands known for durability in intense training and sparring sessions.
+                </p>
+              </div>
             </div>
 
-            <div className="product-card">
-              <Image src="/images/stud-shoes.jpg" alt="Stud Shoes" width={385} height={532} />
-              <h3>Stud Shoes</h3>
-              <p className="product-tagline">Built for speed and control on the field.</p>
-              <p className="product-description">
-                These imported stud shoes feature excellent traction, lightweight material, and a snug fit—ideal for 
-                football or agility-focused drills. Selected for athletes who demand quick turns and grip on grass or turf.
-              </p>
+            <div className="product-column">
+              <div className="product-card">
+                <Image 
+                  src="https://res.cloudinary.com/dstl8qazf/image/upload/v1746800238/vhorpxgcge2ommmcy3pl.png" 
+                  alt="Stud Shoes" 
+                  width={385} 
+                  height={532} 
+                />
+                <h3 className="product-title-overlay">Stud Shoes</h3>
+              </div>
+              <div className="product-detail">
+                <p className="product-tagline">Built for speed and control on the field.</p>
+                <p className="product-description">
+                  These imported stud shoes feature excellent traction, lightweight material, and a snug fit—ideal for 
+                  football or agility-focused drills. Selected for athletes who demand quick turns and grip on grass or turf.
+                </p>
+              </div>
             </div>
 
-            <div className="product-card">
-              <Image src="/images/dumbbells.jpg" alt="Dumbbells" width={381} height={532} />
-              <h3>Dumbbells</h3>
-              <p className="product-tagline">Gear for strength training at any level.</p>
-              <p className="product-description">
-                Made from high-quality materials, these dumbbells are perfect for home gyms or commercial setups. 
-                Our top pick for building strength, endurance, and flexibility with trusted weight accuracy.
-              </p>
+            <div className="product-column">
+              <div className="product-card">
+                <Image 
+                  src="https://res.cloudinary.com/dstl8qazf/image/upload/v1746800242/ucobyaucgrxgvyksfm5a.png" 
+                  alt="Dumbbells" 
+                  width={381} 
+                  height={532} 
+                />
+                <h3 className="product-title-overlay">Dumbbells</h3>
+              </div>
+              <div className="product-detail">
+                <p className="product-tagline">Gear for strength training at any level.</p>
+                <p className="product-description">
+                  Made from high-quality materials, these dumbbells are perfect for home gyms or commercial setups. 
+                  Our top pick for building strength, endurance, and flexibility with trusted weight accuracy.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -65,15 +92,27 @@ export default function Home() {
 
       {/* Categories Section */}
       <section className="categories">
-        <div className="category-card sport">
-          <Image src="/images/sport.jpg" alt="Sport" width={591} height={926} />
-          <h3>SPORT</h3>
-          <a href="#" className="see-more">see more →</a>
-        </div>
-        <div className="category-card fitness">
-          <Image src="/images/fitness.jpg" alt="Fitness" width={596} height={926} />
-          <h3>Fitness</h3>
-          <a href="#" className="see-more">see more →</a>
+        <div className="container">
+          <div className="categories-grid">
+            <div className="category-card sport">
+              <div className="category-image-wrapper">
+                <Image src="https://res.cloudinary.com/dstl8qazf/image/upload/v1746887101/zdmrctdccvhupgarac5l.png" alt="Sport" width={591} height={926} />
+                <div className="category-overlay-text">
+                  <h3>SPORT</h3>
+                  <a href="#" className="see-more">see more →</a>
+                </div>
+              </div>
+            </div>
+            <div className="category-card fitness">
+              <div className="category-image-wrapper">
+                <Image src="https://res.cloudinary.com/dstl8qazf/image/upload/v1746887116/qcw8x6sbgzeecdrs3oiz.png" alt="Fitness" width={596} height={926} />
+                <div className="category-overlay-text">
+                  <h3>Fitness</h3>
+                  <a href="#" className="see-more">see more →</a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
