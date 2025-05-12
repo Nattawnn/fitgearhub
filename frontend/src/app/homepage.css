@@ -24,14 +24,14 @@
   width: 100%;
   height: 100%;
   background: linear-gradient(90deg, rgba(0,0,0,0.75) 40%, rgba(0,0,0,0.2) 100%);
-  z-index: 0;
+  z-index: 1;
 }
 
 .hero-content {
   color: white;
   max-width: 550px;
   position: relative;
-  z-index: 1;
+  z-index: 2;
   margin-left: 0;
   padding-top: 60px;
   width: 100%;
@@ -112,7 +112,7 @@
   margin-bottom: 7rem;
   background: white;
   position: relative;
-  z-index: 1;
+  z-index: 3;
 }
 
 .best-sellers .container {
@@ -191,7 +191,7 @@
   font-weight: 700;
   margin: 0;
   text-shadow: 0 2px 8px rgba(0,0,0,0.5);
-  z-index: 1;
+  z-index: 2;
   transition: all 0.3s ease;
 }
 
@@ -249,7 +249,7 @@
 .categories {
   background: white;
   position: relative;
-  z-index: 1;
+  z-index: 3;
   margin-bottom: 7rem;
 }
 
