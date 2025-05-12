@@ -3,8 +3,10 @@
 import React, { useState, forwardRef } from 'react';
 import { FaShoppingCart, FaTimes, FaTrash } from 'react-icons/fa';
 import './CartHeader.css';
+import { useRouter } from 'next/navigation';
 
 const CartHeader = forwardRef(({ cartOpen, setCartOpen, setProfileOpen }, ref) => {
+  const router = useRouter();
   // Sample cart items - in a real app, this would come from context/state management
   const [cartItems, setCartItems] = useState([
     {
@@ -41,6 +43,11 @@ const CartHeader = forwardRef(({ cartOpen, setCartOpen, setProfileOpen }, ref) =
 
   const calculateTotal = () => {
     return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
+  };
+
+  const handleViewCart = () => {
+    setCartOpen(false);
+    router.push('/cart');
   };
 
   return (
@@ -95,7 +102,7 @@ const CartHeader = forwardRef(({ cartOpen, setCartOpen, setProfileOpen }, ref) =
                   <span>${calculateTotal()}</span>
                 </div>
                 <div className="cart-buttons">
-                  <button className="view-cart-btn">View Cart</button>
+                  <button className="view-cart-btn" onClick={handleViewCart}>View Cart</button>
                   <button className="checkout-btn">Checkout</button>
                 </div>
               </div>
