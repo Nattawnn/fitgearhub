@@ -1,0 +1,4 @@
+/* Hide footer during loading */
+footer {
+  display: none !important;
+} 

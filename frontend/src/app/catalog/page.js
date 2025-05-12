@@ -1,310 +1,549 @@
 'use client';
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
+
 import './catalog.css';
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { FaSearch, FaHeart, FaShoppingCart, FaRegListAlt, FaExchangeAlt, FaStar, FaRegStar, FaDumbbell, FaRunning, FaRegClock } from 'react-icons/fa';
+import CatalogNav from '../components/CatalogNav';
+import SkeletonCatalog from './skeleton/skeletoncatalog';
 
 export default function Catalog() {
-  const [activeCategory, setActiveCategory] = useState('all');
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [activeFilters, setActiveFilters] = useState({
+    category: null,
+    subcategory: null,
+    item: null
+  });
   const [isLoading, setIsLoading] = useState(true);
-
-  // Simulate product data
+  
+  const searchParams = useSearchParams();
+  
   useEffect(() => {
-    const fetchProducts = () => {
-      // Mock data - would be fetched from an API in a real application
-      const mockProducts = [
-        {
-          id: 1,
-          name: 'Pro Elite Training Shoes',
-          price: 189.99,
-          category: 'footwear',
-          image: '/images/catalog/elite-shoes.jpg',
-          features: ['Impact Protection', 'Breathable Mesh'],
-          isNew: true,
-          isBestseller: true,
-          colors: ['Black/Red', 'Navy/White', 'Gray/Neon'],
-          rating: 4.8,
-        },
-        {
-          id: 2,
-          name: 'Performance Compression Tights',
-          price: 79.99,
-          category: 'apparel',
-          image: '/images/catalog/compression-tights.jpg',
-          features: ['4-Way Stretch', 'Moisture Wicking'],
-          isNew: false,
-          isBestseller: true,
-          colors: ['Black', 'Navy', 'Carbon'],
-          rating: 4.9,
-        },
-        {
-          id: 3,
-          name: 'Carbon Fiber Fitness Watch',
-          price: 299.99,
-          category: 'accessories',
-          image: '/images/catalog/fitness-watch.jpg',
-          features: ['Heart Rate Monitor', '7-Day Battery Life'],
-          isNew: true,
-          isBestseller: false,
-          colors: ['Black', 'Silver'],
-          rating: 4.7,
-        },
-        {
-          id: 4,
-          name: 'Advanced Recovery Massage Gun',
-          price: 229.99,
-          category: 'equipment',
-          image: '/images/catalog/massage-gun.jpg',
-          features: ['6 Speed Settings', 'Ultra-Quiet Motor'],
-          isNew: true,
-          isBestseller: false,
-          colors: ['Black/Silver'],
-          rating: 4.9,
-        },
-        {
-          id: 5,
-          name: 'Ultralight Running Jacket',
-          price: 119.99,
-          category: 'apparel',
-          image: '/images/catalog/running-jacket.jpg',
-          features: ['Waterproof', 'Reflective Details'],
-          isNew: false,
-          isBestseller: true,
-          colors: ['Blue', 'Black', 'Red'],
-          rating: 4.6,
-        },
-        {
-          id: 6,
-          name: 'Pro Series Kettlebell Set',
-          price: 249.99,
-          category: 'equipment',
-          image: '/images/catalog/kettlebell-set.jpg',
-          features: ['Competition Grade', 'Ergonomic Handle'],
-          isNew: false,
-          isBestseller: false,
-          colors: ['Black'],
-          rating: 4.9,
-        },
-        {
-          id: 7,
-          name: 'Performance Hydration Pack',
-          price: 89.99,
-          category: 'accessories',
-          image: '/images/catalog/hydration-pack.jpg',
-          features: ['2L Capacity', 'Ventilated Back Panel'],
-          isNew: true,
-          isBestseller: false,
-          colors: ['Black/Blue', 'Red/Black'],
-          rating: 4.7,
-        },
-        {
-          id: 8,
-          name: 'Premium Training Gloves',
-          price: 39.99,
-          category: 'accessories',
-          image: '/images/catalog/training-gloves.jpg',
-          features: ['Anti-Slip Grip', 'Wrist Support'],
-          isNew: false,
-          isBestseller: true,
-          colors: ['Black', 'Gray'],
-          rating: 4.8,
-        }
-      ];
-      
-      setProducts(mockProducts);
+    // Get filter parameters from URL
+    const category = searchParams.get('category');
+    const subcategory = searchParams.get('subcategory');
+    const item = searchParams.get('item');
+    
+    if (category || subcategory || item) {
+      setActiveFilters({
+        category: category || null,
+        subcategory: subcategory || null,
+        item: item || null
+      });
+    }
+  }, [searchParams]);
+  
+  useEffect(() => {
+    // Simulate loading state
+    setIsLoading(true);
+    
+    // Mock product data for demonstration
+    const productData = [
+      {
+        id: 1,
+        name: 'Premium Boxing Gloves',
+        category: 'Combat Sports',
+        subcategory: 'Boxing',
+        itemType: 'Accessories',
+        price: 180,
+        rating: 4.7,
+        reviews: 42,
+        badge: 'bestseller',
+        description: 'Professional grade leather gloves with superior wrist support and impact absorption.',
+        image: 'https://res.cloudinary.com/dstl8qazf/image/upload/v1746800160/b2zemgektesep1nqfirh.png',
+        thumbnails: [
+          'https://res.cloudinary.com/dstl8qazf/image/upload/v1746800160/b2zemgektesep1nqfirh.png',
+          'https://via.placeholder.com/40x40',
+          'https://via.placeholder.com/40x40'
+        ],
+        colors: ['#d32f2f', '#000000', '#2e7d32'],
+        specs: [
+          { icon: <FaDumbbell />, text: 'Pro Grade' },
+          { icon: <FaRunning />, text: 'Endurance+' }
+        ],
+        stock: 15
+      },
+      {
+        id: 2,
+        name: 'Pro Performance Stud Shoes',
+        category: 'Sports',
+        subcategory: 'Soccer',
+        itemType: 'Cleats',
+        price: 180,
+        rating: 4.8,
+        reviews: 35,
+        badge: 'new',
+        description: 'Engineered for explosive acceleration with carbon fiber reinforced cleats and adaptive fit.',
+        image: 'https://res.cloudinary.com/dstl8qazf/image/upload/v1746800238/vhorpxgcge2ommmcy3pl.png',
+        thumbnails: [
+          'https://res.cloudinary.com/dstl8qazf/image/upload/v1746800238/vhorpxgcge2ommmcy3pl.png',
+          'https://via.placeholder.com/40x40',
+          'https://via.placeholder.com/40x40'
+        ],
+        colors: ['#303f9f', '#f57c00', '#000000'],
+        specs: [
+          { icon: <FaRunning />, text: 'Speed+' },
+          { icon: <FaRegClock />, text: 'Durable' }
+        ],
+        stock: 8
+      },
+      {
+        id: 3,
+        name: 'Elite Series Dumbbells',
+        category: 'Fitness',
+        subcategory: 'Weights',
+        itemType: 'Dumbbells',
+        price: 180,
+        rating: 4.9,
+        reviews: 56,
+        description: 'Precision-engineered cast iron with ergonomic grip and balanced weight distribution.',
+        image: 'https://res.cloudinary.com/dstl8qazf/image/upload/v1746800242/ucobyaucgrxgvyksfm5a.png',
+        thumbnails: [
+          'https://res.cloudinary.com/dstl8qazf/image/upload/v1746800242/ucobyaucgrxgvyksfm5a.png',
+          'https://via.placeholder.com/40x40',
+          'https://via.placeholder.com/40x40'
+        ],
+        colors: ['#424242', '#9e9e9e'],
+        specs: [
+          { icon: <FaDumbbell />, text: 'Heavy Duty' },
+          { icon: <FaRunning />, text: 'Grip+' }
+        ],
+        stock: 22
+      },
+      {
+        id: 4,
+        name: 'Competition Basketball',
+        category: 'Sports',
+        subcategory: 'Basketball',
+        itemType: 'Balls',
+        price: 180,
+        rating: 4.6,
+        reviews: 28,
+        description: 'Official size and weight with micro-fiber cover for exceptional grip and durability.',
+        image: 'https://via.placeholder.com/382x532/FF6B35/FFFFFF?text=Basketball',
+        thumbnails: [
+          'https://via.placeholder.com/40x40',
+          'https://via.placeholder.com/40x40',
+          'https://via.placeholder.com/40x40'
+        ],
+        colors: ['#ff9800', '#000000'],
+        specs: [
+          { icon: <FaDumbbell />, text: 'Competition' },
+          { icon: <FaRegClock />, text: 'Long-lasting' }
+        ],
+        stock: 17
+      },
+      {
+        id: 5,
+        name: 'Advanced Training Resistance Bands',
+        category: 'Fitness',
+        subcategory: 'Yoga',
+        itemType: 'Accessories',
+        price: 180,
+        rating: 4.5,
+        reviews: 31,
+        badge: 'bestseller',
+        description: 'Progressive resistance set with reinforced latex construction and secure anchoring system.',
+        image: 'https://via.placeholder.com/382x532/002e5f/FFFFFF?text=Bands',
+        thumbnails: [
+          'https://via.placeholder.com/40x40',
+          'https://via.placeholder.com/40x40',
+          'https://via.placeholder.com/40x40'
+        ],
+        colors: ['#4caf50', '#f44336', '#2196f3'],
+        specs: [
+          { icon: <FaRunning />, text: 'All Levels' },
+          { icon: <FaRegClock />, text: 'Anti-Snap' }
+        ],
+        stock: 5
+      },
+      {
+        id: 6,
+        name: 'Carbon Fiber Tennis Racket',
+        category: 'Sports',
+        subcategory: 'Tennis',
+        itemType: 'Rackets',
+        price: 180,
+        rating: 4.7,
+        reviews: 23,
+        description: 'Tournament-grade carbon fiber frame with vibration dampening and optimal string tension.',
+        image: 'https://via.placeholder.com/382x532/001f3f/FFFFFF?text=Racket',
+        thumbnails: [
+          'https://via.placeholder.com/40x40',
+          'https://via.placeholder.com/40x40',
+          'https://via.placeholder.com/40x40'
+        ],
+        colors: ['#000000', '#3f51b5'],
+        specs: [
+          { icon: <FaDumbbell />, text: 'Lightweight' },
+          { icon: <FaRunning />, text: 'Control+' }
+        ],
+        stock: 11
+      },
+      {
+        id: 7,
+        name: 'Premium Soccer Ball',
+        category: 'Sports',
+        subcategory: 'Soccer',
+        itemType: 'Balls',
+        price: 120,
+        rating: 4.8,
+        reviews: 42,
+        description: 'Professional match ball with advanced aerodynamics and water-resistant technology.',
+        image: 'https://via.placeholder.com/382x532/4CAF50/FFFFFF?text=Soccer+Ball',
+        thumbnails: [
+          'https://via.placeholder.com/40x40',
+          'https://via.placeholder.com/40x40',
+          'https://via.placeholder.com/40x40'
+        ],
+        colors: ['#4CAF50', '#FFFFFF', '#000000'],
+        specs: [
+          { icon: <FaDumbbell />, text: 'Match Quality' },
+          { icon: <FaRegClock />, text: 'Durable' }
+        ],
+        stock: 25
+      },
+      {
+        id: 8,
+        name: 'Tennis Ball Set',
+        category: 'Sports',
+        subcategory: 'Tennis',
+        itemType: 'Balls',
+        price: 25,
+        rating: 4.5,
+        reviews: 38,
+        description: 'Tournament-grade tennis balls with consistent bounce and visibility.',
+        image: 'https://via.placeholder.com/382x532/FFEB3B/FFFFFF?text=Tennis+Balls',
+        thumbnails: [
+          'https://via.placeholder.com/40x40',
+          'https://via.placeholder.com/40x40',
+          'https://via.placeholder.com/40x40'
+        ],
+        colors: ['#FFEB3B'],
+        specs: [
+          { icon: <FaDumbbell />, text: 'Competition' },
+          { icon: <FaRegClock />, text: 'Extra Bounce' }
+        ],
+        stock: 50
+      }
+    ];
+    
+    // Simulate API fetch delay
+    const timer = setTimeout(() => {
+      setProducts(productData);
       setIsLoading(false);
-    };
-
-    // Simulate API call delay
-    setTimeout(fetchProducts, 800);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
   }, []);
+  
+  // Filter products based on active filters
+  useEffect(() => {
+    if (!products.length) return;
+    
+    let filtered = [...products];
+    
+    if (activeFilters.category) {
+      filtered = filtered.filter(product => 
+        product.category.toLowerCase() === activeFilters.category.toLowerCase()
+      );
+    }
+    
+    if (activeFilters.subcategory) {
+      filtered = filtered.filter(product => 
+        product.subcategory.toLowerCase() === activeFilters.subcategory.toLowerCase()
+      );
+    }
+    
+    if (activeFilters.item) {
+      filtered = filtered.filter(product => 
+        product.itemType.toLowerCase() === activeFilters.item.toLowerCase()
+      );
+    }
+    
+    setFilteredProducts(filtered);
+  }, [products, activeFilters]);
 
-  const filteredProducts = activeCategory === 'all' 
-    ? products 
-    : products.filter(product => product.category === activeCategory);
+  // Function to render star ratings
+  const renderStars = (rating) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      if (i <= Math.floor(rating)) {
+        stars.push(<FaStar key={i} className="star" />);
+      } else if (i === Math.ceil(rating) && !Number.isInteger(rating)) {
+        stars.push(<FaStar key={i} className="star" style={{ opacity: '0.5' }} />);
+      } else {
+        stars.push(<FaRegStar key={i} className="star" />);
+      }
+    }
+    return stars;
+  };
+
+  // Recently viewed products (simplified for demo)
+  const recentlyViewed = products.slice(0, 4);
+  
+  // Products to display (filtered or all)
+  const displayProducts = filteredProducts.length > 0 ? filteredProducts : products;
+  
+  // Get filter text for display
+  const getFilterText = () => {
+    if (activeFilters.item) {
+      return `${activeFilters.item}`;
+    }
+    if (activeFilters.subcategory) {
+      return `${activeFilters.subcategory}`;
+    }
+    if (activeFilters.category) {
+      return `${activeFilters.category}`;
+    }
+    return 'Premium Fitness Gear';
+  };
+
+  if (isLoading) {
+    return <SkeletonCatalog />;
+  }
 
   return (
-    <div className="catalog-container">
-      {/* Hero Section */}
-      <section className="hero-section">
-        <div className="hero-content">
-          <h1>ELEVATE YOUR PERFORMANCE</h1>
-          <p>Premium gear engineered for those who demand excellence</p>
-          <button className="cta-button">SHOP THE COLLECTION</button>
-        </div>
-      </section>
-
-      {/* Category Navigation */}
-      <section className="category-section">
-        <div className="section-title">
-          <h2>PREMIUM COLLECTIONS</h2>
-          <div className="accent-line"></div>
-        </div>
-        <div className="category-nav">
-          <button 
-            className={activeCategory === 'all' ? 'active' : ''} 
-            onClick={() => setActiveCategory('all')}
-          >
-            All Products
-          </button>
-          <button 
-            className={activeCategory === 'footwear' ? 'active' : ''} 
-            onClick={() => setActiveCategory('footwear')}
-          >
-            Footwear
-          </button>
-          <button 
-            className={activeCategory === 'apparel' ? 'active' : ''} 
-            onClick={() => setActiveCategory('apparel')}
-          >
-            Apparel
-          </button>
-          <button 
-            className={activeCategory === 'equipment' ? 'active' : ''} 
-            onClick={() => setActiveCategory('equipment')}
-          >
-            Equipment
-          </button>
-          <button 
-            className={activeCategory === 'accessories' ? 'active' : ''} 
-            onClick={() => setActiveCategory('accessories')}
-          >
-            Accessories
-          </button>
-        </div>
-      </section>
-
-      {/* Product Grid */}
-      <section className="products-grid-section">
-        {isLoading ? (
-          <div className="loading-container">
-            <div className="loading-spinner"></div>
-            <p>Loading premium products...</p>
+    <main className="catalog-page">
+      {/* Premium Header Section */}
+      <section className="catalog-header">
+        <div className="container">
+          <div className="catalog-header-content">
+            <h1 className="catalog-title">{getFilterText()}</h1>
+            <p className="catalog-subtitle">
+              {activeFilters.category || activeFilters.subcategory || activeFilters.item
+                ? `Browse our selection of ${getFilterText().toLowerCase()} products`
+                : 'Discover our curated collection of high-performance equipment designed for athletes who demand excellence and precision in every workout.'}
+            </p>
           </div>
-        ) : (
+        </div>
+      </section>
+
+      <div className="container">
+        {/* Premium Navigation and Filters */}
+        <CatalogNav />
+        
+        {/* Featured Products */}
+        <div className="featured-row">
+          <div className="featured-header">
+            <h2 className="featured-title">
+              {activeFilters.category || activeFilters.subcategory || activeFilters.item
+                ? `${getFilterText()} Products`
+                : 'Featured Equipment'}
+            </h2>
+            <div className="featured-line"></div>
+          </div>
+          
           <div className="products-grid">
-            {filteredProducts.map((product) => (
+            {displayProducts.slice(0, 3).map(product => (
               <div key={product.id} className="product-card">
+                {product.badge && (
+                  <div className={`product-badge badge-${product.badge}`}>
+                    {product.badge === 'bestseller' ? 'Best Seller' : 'New Arrival'}
+                  </div>
+                )}
+                
                 <div className="product-image-container">
-                  <div className="product-image">
-                    {/* Using a div with background as a placeholder for the image */}
-                    <div className="placeholder-image"></div>
-                  </div>
-                  <div className="product-badges">
-                    {product.isNew && <span className="badge new-badge">NEW</span>}
-                    {product.isBestseller && <span className="badge bestseller-badge">BESTSELLER</span>}
-                  </div>
-                </div>
-                <div className="product-info">
-                  <h3>{product.name}</h3>
-                  <div className="product-features">
-                    {product.features.map((feature, index) => (
-                      <span key={index} className="feature-tag">{feature}</span>
+                  <img 
+                    src={product.image} 
+                    alt={product.name} 
+                    className="product-image"
+                  />
+                  
+                  <div className="product-thumbnails">
+                    {product.thumbnails.map((thumb, idx) => (
+                      <img 
+                        key={idx} 
+                        src={thumb} 
+                        alt={`${product.name} view ${idx+1}`} 
+                        className="thumbnail"
+                      />
                     ))}
                   </div>
-                  <div className="product-meta">
-                    <div className="product-rating">
-                      <span className="stars">★★★★★</span>
-                      <span className="rating-value">{product.rating}</span>
-                    </div>
-                    <div className="product-colors">
-                      {product.colors.length} {product.colors.length === 1 ? 'color' : 'colors'}
+                  
+                  <div className="quick-actions">
+                    <button className="action-button">
+                      <FaHeart />
+                    </button>
+                    <button className="action-button">
+                      <FaExchangeAlt />
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="product-info">
+                  <div className="product-category">{product.category}</div>
+                  <h3 className="product-title">{product.name}</h3>
+                  
+                  <div className="product-specs">
+                    {product.specs.map((spec, idx) => (
+                      <div key={idx} className="spec-item">
+                        <span className="spec-icon">{spec.icon}</span>
+                        <span>{spec.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <p className="product-description">{product.description}</p>
+                  
+                  <div className="color-options">
+                    {product.colors.map((color, idx) => (
+                      <div 
+                        key={idx} 
+                        className={`color-option ${idx === 0 ? 'active' : ''}`} 
+                        style={{ backgroundColor: color }}
+                      ></div>
+                    ))}
+                  </div>
+                  
+                  <div className="stock-indicator">
+                    {product.stock <= 5 ? (
+                      <span className="low-stock">Only {product.stock} left in stock</span>
+                    ) : (
+                      <span className="in-stock">In Stock</span>
+                    )}
+                  </div>
+                  
+                  <div className="product-footer">
+                    <div className="product-price">${product.price}</div>
+                    
+                    <div className="ratings">
+                      <div className="stars">
+                        {renderStars(product.rating)}
+                      </div>
+                      <span className="review-count">({product.reviews})</span>
                     </div>
                   </div>
-                  <div className="product-price">${product.price.toFixed(2)}</div>
-                  <button className="add-to-cart-button">ADD TO CART</button>
                 </div>
               </div>
             ))}
           </div>
+        </div>
+        
+        {/* More Products */}
+        {displayProducts.length > 3 && (
+          <div className="products-container">
+            <div className="products-grid">
+              {displayProducts.slice(3).map(product => (
+                <div key={product.id} className="product-card">
+                  {product.badge && (
+                    <div className={`product-badge badge-${product.badge}`}>
+                      {product.badge === 'bestseller' ? 'Best Seller' : 'New Arrival'}
+                    </div>
+                  )}
+                  
+                  <div className="product-image-container">
+                    <img 
+                      src={product.image} 
+                      alt={product.name} 
+                      className="product-image"
+                    />
+                    
+                    <div className="product-thumbnails">
+                      {product.thumbnails.map((thumb, idx) => (
+                        <img 
+                          key={idx} 
+                          src={thumb} 
+                          alt={`${product.name} view ${idx+1}`} 
+                          className="thumbnail"
+                        />
+                      ))}
+                    </div>
+                    
+                    <div className="quick-actions">
+                      <button className="action-button">
+                        <FaHeart />
+                      </button>
+                      <button className="action-button">
+                        <FaExchangeAlt />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="product-info">
+                    <div className="product-category">{product.category}</div>
+                    <h3 className="product-title">{product.name}</h3>
+                    
+                    <div className="product-specs">
+                      {product.specs.map((spec, idx) => (
+                        <div key={idx} className="spec-item">
+                          <span className="spec-icon">{spec.icon}</span>
+                          <span>{spec.text}</span>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <p className="product-description">{product.description}</p>
+                    
+                    <div className="color-options">
+                      {product.colors.map((color, idx) => (
+                        <div 
+                          key={idx} 
+                          className={`color-option ${idx === 0 ? 'active' : ''}`} 
+                          style={{ backgroundColor: color }}
+                        ></div>
+                      ))}
+                    </div>
+                    
+                    <div className="stock-indicator">
+                      {product.stock <= 5 ? (
+                        <span className="low-stock">Only {product.stock} left in stock</span>
+                      ) : (
+                        <span className="in-stock">In Stock</span>
+                      )}
+                    </div>
+                    
+                    <div className="product-footer">
+                      <div className="product-price">${product.price}</div>
+                      
+                      <div className="ratings">
+                        <div className="stars">
+                          {renderStars(product.rating)}
+                        </div>
+                        <span className="review-count">({product.reviews})</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
-      </section>
-
-      {/* Product Spotlight */}
-      <section className="product-spotlight">
-        <div className="section-title">
-          <h2>FEATURED TECHNOLOGY</h2>
-          <div className="accent-line"></div>
-        </div>
-        <div className="spotlight-container">
-          <div className="spotlight-image">
-            <div className="placeholder-spotlight-image"></div>
+        
+        {/* Recently Viewed Section */}
+        <section className="recently-viewed">
+          <div className="recently-viewed-header">
+            <h2 className="recently-viewed-title">Recently Viewed</h2>
+            <a href="#" className="view-all">View All</a>
           </div>
-          <div className="spotlight-content">
-            <h3>PRO ELITE TRAINING SHOES</h3>
-            <div className="tech-highlights">
-              <div className="tech-point">
-                <div className="tech-icon"></div>
-                <div className="tech-info">
-                  <h4>ADAPTIVE CUSHIONING</h4>
-                  <p>Response foam adapts to your stride, providing customized impact protection for every training style.</p>
+          
+          <div className="horizontal-scroll">
+            {recentlyViewed.map(product => (
+              <div key={product.id} className="product-card scroll-card">
+                <div className="product-image-container">
+                  <img 
+                    src={product.image} 
+                    alt={product.name} 
+                    className="product-image"
+                  />
+                </div>
+                
+                <div className="product-info">
+                  <h3 className="product-title">{product.name}</h3>
+                  <div className="product-footer">
+                    <div className="product-price">${product.price}</div>
+                    <div className="stars">
+                      {renderStars(product.rating)}
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="tech-point">
-                <div className="tech-icon"></div>
-                <div className="tech-info">
-                  <h4>DYNAMIC STABILITY</h4>
-                  <p>Strategic support structures engage during lateral movements, preventing rollover without restricting natural motion.</p>
-                </div>
-              </div>
-              <div className="tech-point">
-                <div className="tech-icon"></div>
-                <div className="tech-info">
-                  <h4>TEMPERATURE CONTROL</h4>
-                  <p>Breathable mesh panels utilize body heat to create airflow, keeping your feet cool during intense workouts.</p>
-                </div>
-              </div>
-            </div>
-            <div className="spotlight-cta">
-              <div className="price-badge">$189.99</div>
-              <button className="spotlight-button">SHOP NOW</button>
-            </div>
-            <div className="athlete-quote">
-              "These shoes have transformed my training. The stability during HIIT is unmatched."
-              <span className="quote-author">- Alex Chen, Professional Trainer</span>
-            </div>
+            ))}
           </div>
-        </div>
-      </section>
-
-      {/* Collection Story */}
-      <section className="collection-story">
-        <div className="section-title">
-          <h2>THE ELITE SERIES</h2>
-          <div className="accent-line"></div>
-        </div>
-        <div className="story-container">
-          <div className="story-content">
-            <h3>ENGINEERED FOR CHAMPIONS</h3>
-            <p>Developed in collaboration with elite athletes across multiple disciplines, our Elite Series represents the pinnacle of performance technology. Each piece is tested in extreme conditions to ensure it meets the demands of world-class competitors.</p>
-            <p>From moisture-wicking fabrics that adapt to your body temperature to compression patterns that enhance blood flow during recovery, every detail is meticulously crafted to support peak performance.</p>
-            <div className="story-cta">
-              <button className="story-button">EXPLORE THE COLLECTION</button>
-              <div className="qr-code">
-                <div className="qr-placeholder"></div>
-                <span>Scan for videos</span>
-              </div>
-            </div>
-          </div>
-          <div className="story-images">
-            <div className="story-image-main"></div>
-            <div className="story-image-small"></div>
-            <div className="story-image-small"></div>
-          </div>
-        </div>
-      </section>
-
-      {/* Limited Edition Banner */}
-      <section className="limited-banner">
-        <div className="banner-content">
-          <div className="limited-badge">LIMITED RELEASE</div>
-          <h3>ALTITUDE COLLECTION</h3>
-          <p>Engineered for high-performance in extreme conditions. Available for 2 weeks only.</p>
-          <div className="countdown">14 DAYS REMAINING</div>
-          <button className="banner-button">SHOP NOW</button>
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </main>
   );
 }
