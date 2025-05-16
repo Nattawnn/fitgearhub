@@ -1,162 +1,119 @@
 'use client';
 
-import { useState } from 'react';
-import { Card, Metric, Text, Title, BarChart, DonutChart, LineChart } from '@tremor/react';
-import { 
-  Layout,
-  BarChart as BarChartIcon,
-  Users,
-  Package,
-  DollarSign,
-  ShoppingCart,
-  AlertTriangle,
-  Sun,
-  Moon
-} from 'lucide-react';
+import { useState, useEffect } from 'react';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Bar, Line } from 'react-chartjs-2';
 
-// Mock data - replace with real data from your API
-const salesData = [
-  { date: '2024-01', revenue: 12000 },
-  { date: '2024-02', revenue: 15000 },
-  { date: '2024-03', revenue: 18000 },
-];
-
-const categoryData = [
-  { category: 'Weights', sales: 3200 },
-  { category: 'Cardio Equipment', sales: 2800 },
-  { category: 'Supplements', sales: 2200 },
-  { category: 'Apparel', sales: 1800 },
-];
-
-const customerData = [
-  { segment: 'New', value: 34 },
-  { segment: 'Returning', value: 45 },
-  { segment: 'VIP', value: 21 },
-];
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend
+);
+import './admin.css';
 
 export default function AdminDashboard() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [salesData, setSalesData] = useState({
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    datasets: [{
+      label: 'Monthly Sales',
+      data: [12000, 19000, 15000, 25000, 22000, 30000],
+      backgroundColor: 'rgba(53, 162, 235, 0.5)',
+    }]
+  });
 
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle('dark');
-  };
+  const [ordersData, setOrdersData] = useState({
+    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    datasets: [{
+      label: 'Daily Orders',
+      data: [65, 59, 80, 81, 56, 55, 40],
+      borderColor: 'rgb(75, 192, 192)',
+      tension: 0.1
+    }]
+  });
+
+  const stats = [
+    { title: 'Total Revenue', value: '$89,000', change: '+20.1%' },
+    { title: 'Active Users', value: '2,300', change: '+15.5%' },
+    { title: 'New Orders', value: '156', change: '+5.8%' },
+    { title: 'Product Stock', value: '1,245', change: '-2.3%' }
+  ];
 
   return (
-    <div className={`min-h-screen p-8 ${isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-            Admin Dashboard
-          </h1>
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700"
-          >
-            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </button>
+    <div className="admin-dashboard">
+      <header className="dashboard-header">
+        <h1>Admin Dashboard</h1>
+        <div className="header-actions">
+          <button className="btn-primary">Generate Report</button>
+          <button className="btn-secondary">Settings</button>
+        </div>
+      </header>
+
+      <div className="stats-grid">
+        {stats.map((stat, index) => (
+          <div key={index} className="stat-card">
+            <h3>{stat.title}</h3>
+            <p className="stat-value">{stat.value}</p>
+            <span className={`stat-change ${stat.change.startsWith('+') ? 'positive' : 'negative'}`}>
+              {stat.change}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <div className="charts-container">
+        <div className="chart-card">
+          <h2>Revenue Overview</h2>
+          <Bar data={salesData} options={{
+            responsive: true,
+            plugins: {
+              legend: { position: 'top' },
+              title: { display: true, text: 'Monthly Sales Performance' }
+            }
+          }} />
         </div>
 
-        {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card decoration="top" decorationColor="indigo">
-            <div className="flex items-center space-x-4">
-              <DollarSign className="w-8 h-8 text-indigo-500" />
-              <div>
-                <Text>Total Revenue</Text>
-                <Metric>$45,000</Metric>
-              </div>
-            </div>
-          </Card>
-          <Card decoration="top" decorationColor="green">
-            <div className="flex items-center space-x-4">
-              <ShoppingCart className="w-8 h-8 text-green-500" />
-              <div>
-                <Text>Orders</Text>
-                <Metric>256</Metric>
-              </div>
-            </div>
-          </Card>
-          <Card decoration="top" decorationColor="blue">
-            <div className="flex items-center space-x-4">
-              <Users className="w-8 h-8 text-blue-500" />
-              <div>
-                <Text>Active Users</Text>
-                <Metric>1,234</Metric>
-              </div>
-            </div>
-          </Card>
-          <Card decoration="top" decorationColor="red">
-            <div className="flex items-center space-x-4">
-              <AlertTriangle className="w-8 h-8 text-red-500" />
-              <div>
-                <Text>Low Stock Items</Text>
-                <Metric>12</Metric>
-              </div>
-            </div>
-          </Card>
+        <div className="chart-card">
+          <h2>Orders Trend</h2>
+          <Line data={ordersData} options={{
+            responsive: true,
+            plugins: {
+              legend: { position: 'top' },
+              title: { display: true, text: 'Weekly Orders Analysis' }
+            }
+          }} />
         </div>
+      </div>
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <Card>
-            <Title>Revenue Trends</Title>
-            <LineChart
-              data={salesData}
-              index="date"
-              categories={["revenue"]}
-              colors={["indigo"]}
-              valueFormatter={(value) => `$${value.toLocaleString()}`}
-              yAxisWidth={60}
-            />
-          </Card>
-          <Card>
-            <Title>Category Performance</Title>
-            <BarChart
-              data={categoryData}
-              index="category"
-              categories={["sales"]}
-              colors={["blue"]}
-              valueFormatter={(value) => `$${value.toLocaleString()}`}
-              yAxisWidth={60}
-            />
-          </Card>
-        </div>
-
-        {/* Customer Demographics */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card>
-            <Title>Customer Segments</Title>
-            <DonutChart
-              data={customerData}
-              category="value"
-              index="segment"
-              valueFormatter={(value) => `${value}%`}
-              colors={["indigo", "blue", "green"]}
-            />
-          </Card>
-          <Card>
-            <Title>Recent Orders</Title>
-            <div className="mt-4">
-              {/* Add a table component here for recent orders */}
-              <div className="space-y-4">
-                {[1, 2, 3].map((order) => (
-                  <div
-                    key={order}
-                    className="p-4 border rounded-lg dark:border-gray-700 flex justify-between items-center"
-                  >
-                    <div>
-                      <Text>Order #{order}23456</Text>
-                      <Text className="text-sm text-gray-500">2 hours ago</Text>
-                    </div>
-                    <span className="px-3 py-1 rounded-full bg-green-100 text-green-800 text-sm">
-                      Completed
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Card>
+      <div className="recent-activity">
+        <h2>Recent Activity</h2>
+        <div className="activity-list">
+          <div className="activity-item">
+            <span className="activity-time">2 hours ago</span>
+            <p>New order #2458 received for Premium Yoga Mat</p>
+          </div>
+          <div className="activity-item">
+            <span className="activity-time">3 hours ago</span>
+            <p>Stock update: Running Shoes inventory low</p>
+          </div>
+          <div className="activity-item">
+            <span className="activity-time">5 hours ago</span>
+            <p>Customer review received for Fitness Tracker Pro</p>
+          </div>
         </div>
       </div>
     </div>
