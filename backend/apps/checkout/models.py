@@ -17,7 +17,12 @@ class Checkout(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    shipping_address = models.TextField()
+    
+    # Contact Information
+    full_name = models.CharField(max_length=200, null=True, blank=True)
+    phone_number = models.CharField(max_length=20, null=True, blank=True)
+    shipping_address = models.TextField(null=True, blank=True)
+    
     payment_method = models.CharField(max_length=50)
     payment_status = models.CharField(max_length=20, default='pending')
 

@@ -16,33 +16,29 @@ export default function AdminLayout({ children }) {
   ];
 
   return (
-    <html lang="en">
-      <body>
-        <div className="admin-layout">
-          <aside className={`admin-sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
-            <div className="sidebar-header">
-              <h2>FitGearHub</h2>
-              <button 
-                className="collapse-btn"
-                onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-              >
-                {isSidebarCollapsed ? '→' : '←'}
-              </button>
-            </div>
-            <nav className="sidebar-nav">
-              {menuItems.map((item, index) => (
-                <a key={index} href={item.path} className="nav-item">
-                  <span className="nav-icon">{item.icon}</span>
-                  {!isSidebarCollapsed && <span className="nav-label">{item.label}</span>}
-                </a>
-              ))}
-            </nav>
-          </aside>
-          <main className="admin-main">
-            {children}
-          </main>
+    <div className="admin-layout">
+      <aside className={`admin-sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+        <div className="sidebar-header">
+          <h2>FitGearHub</h2>
+          <button 
+            className="collapse-btn"
+            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          >
+            {isSidebarCollapsed ? '→' : '←'}
+          </button>
         </div>
-      </body>
-    </html>
+        <nav className="sidebar-nav">
+          {menuItems.map((item, index) => (
+            <a key={index} href={item.path} className="nav-item">
+              <span className="nav-icon">{item.icon}</span>
+              {!isSidebarCollapsed && <span className="nav-label">{item.label}</span>}
+            </a>
+          ))}
+        </nav>
+      </aside>
+      <main className="admin-main">
+        {children}
+      </main>
+    </div>
   );
 } 

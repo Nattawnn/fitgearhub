@@ -17,6 +17,6 @@ class CheckoutSerializer(serializers.ModelSerializer):
     class Meta:
         model = Checkout
         fields = ['id', 'user', 'created_at', 'updated_at', 'status', 
-                 'total_amount', 'shipping_address', 'payment_method', 
-                 'payment_status', 'items']
+                 'total_amount', 'full_name', 'phone_number', 'shipping_address', 
+                 'payment_method', 'payment_status', 'items']
         read_only_fields = ['user', 'total_amount'] 

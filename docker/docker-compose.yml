@@ -29,6 +29,28 @@ services:
     environment:
       - DEBUG=1
       - DJANGO_SETTINGS_MODULE=project_name.settings
+      - DB_NAME=fitgearhub
+      - DB_USER=postgres
+      - DB_PASSWORD=postgrespassword
+      - DB_HOST=db
+      - DB_PORT=5432
     command: >
-      sh -c "python manage.py migrate &&
+      sh -c "python manage.py wait_for_db &&
+             python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=fitgearhub
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgrespassword
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
