@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { FaSearch, FaHeart, FaShoppingCart, FaRegListAlt, FaExchangeAlt, FaStar, FaRegStar, FaDumbbell, FaRunning, FaRegClock } from 'react-icons/fa';
 import CatalogNav from '../components/CatalogNav';
 import SkeletonCatalog from './skeleton/skeletoncatalog';
+import Link from 'next/link';
 
 export default function Catalog() {
   const [products, setProducts] = useState([]);
@@ -306,235 +307,228 @@ export default function Catalog() {
   }
 
   return (
-    <main className="catalog-page">
-      {/* Premium Header Section */}
-      <section className="catalog-header">
-        <div className="container">
-          <div className="catalog-header-content">
-            <h1 className="catalog-title">{getFilterText()}</h1>
-            <p className="catalog-subtitle">
-              {activeFilters.category || activeFilters.subcategory || activeFilters.item
-                ? `Browse our selection of ${getFilterText().toLowerCase()} products`
-                : 'Discover our curated collection of high-performance equipment designed for athletes who demand excellence and precision in every workout.'}
-            </p>
-          </div>
+    <main className="fitgear-catalog-page">
+      <section className="fitgear-catalog-header">
+        <div className="fitgear-catalog-header-content">
+          <h1 className="fitgear-catalog-title">{getFilterText()}</h1>
+          <p className="fitgear-catalog-subtitle">
+            {activeFilters.category || activeFilters.subcategory || activeFilters.item
+              ? `Browse our selection of ${getFilterText().toLowerCase()} products`
+              : 'Discover our curated collection of high-performance equipment designed for athletes who demand excellence and precision in every workout.'}
+          </p>
         </div>
       </section>
 
-      <div className="container">
-        {/* Premium Navigation and Filters */}
+      <div className="fitgear-catalog-container">
         <CatalogNav />
         
-        {/* Featured Products */}
-        <div className="featured-row">
-          <div className="featured-header">
-            <h2 className="featured-title">
+        <div className="fitgear-catalog-featured-row">
+          <div className="fitgear-catalog-featured-header">
+            <h2 className="fitgear-catalog-featured-title">
               {activeFilters.category || activeFilters.subcategory || activeFilters.item
                 ? `${getFilterText()} Products`
                 : 'Featured Equipment'}
             </h2>
-            <div className="featured-line"></div>
+            <div className="fitgear-catalog-featured-line"></div>
           </div>
           
-          <div className="products-grid">
+          <div className="fitgear-catalog-products-grid">
             {displayProducts.slice(0, 3).map(product => (
-              <div key={product.id} className="product-card">
+              <Link href={`/products/${product.id}`} key={product.id} className="fitgear-catalog-product-card">
                 {product.badge && (
-                  <div className={`product-badge badge-${product.badge}`}>
+                  <div className={`fitgear-catalog-product-badge fitgear-catalog-badge-${product.badge}`}>
                     {product.badge === 'bestseller' ? 'Best Seller' : 'New Arrival'}
                   </div>
                 )}
                 
-                <div className="product-image-container">
+                <div className="fitgear-catalog-product-image-container">
                   <img 
                     src={product.image} 
                     alt={product.name} 
-                    className="product-image"
+                    className="fitgear-catalog-product-image"
                   />
                   
-                  <div className="product-thumbnails">
+                  <div className="fitgear-catalog-product-thumbnails">
                     {product.thumbnails.map((thumb, idx) => (
                       <img 
                         key={idx} 
                         src={thumb} 
                         alt={`${product.name} view ${idx+1}`} 
-                        className="thumbnail"
+                        className="fitgear-catalog-thumbnail"
                       />
                     ))}
                   </div>
                   
-                  <div className="quick-actions">
-                    <button className="action-button">
+                  <div className="fitgear-catalog-quick-actions">
+                    <button className="fitgear-catalog-action-button" onClick={(e) => e.preventDefault()}>
                       <FaHeart />
                     </button>
-                    <button className="action-button">
+                    <button className="fitgear-catalog-action-button" onClick={(e) => e.preventDefault()}>
                       <FaExchangeAlt />
                     </button>
                   </div>
                 </div>
                 
-                <div className="product-info">
-                  <div className="product-category">{product.category}</div>
-                  <h3 className="product-title">{product.name}</h3>
+                <div className="fitgear-catalog-product-info">
+                  <div className="fitgear-catalog-product-category">{product.category}</div>
+                  <h3 className="fitgear-catalog-product-title">{product.name}</h3>
                   
-                  <div className="product-specs">
+                  <div className="fitgear-catalog-product-specs">
                     {product.specs.map((spec, idx) => (
-                      <div key={idx} className="spec-item">
-                        <span className="spec-icon">{spec.icon}</span>
+                      <div key={idx} className="fitgear-catalog-spec-item">
+                        <span className="fitgear-catalog-spec-icon">{spec.icon}</span>
                         <span>{spec.text}</span>
                       </div>
                     ))}
                   </div>
                   
-                  <p className="product-description">{product.description}</p>
+                  <p className="fitgear-catalog-product-description">{product.description}</p>
                   
-                  <div className="color-options">
+                  <div className="fitgear-catalog-color-options">
                     {product.colors.map((color, idx) => (
                       <div 
                         key={idx} 
-                        className={`color-option ${idx === 0 ? 'active' : ''}`} 
+                        className={`fitgear-catalog-color-option ${idx === 0 ? 'active' : ''}`} 
                         style={{ backgroundColor: color }}
                       ></div>
                     ))}
                   </div>
                   
-                  <div className="stock-indicator">
+                  <div className="fitgear-catalog-stock-indicator">
                     {product.stock <= 5 ? (
-                      <span className="low-stock">Only {product.stock} left in stock</span>
+                      <span className="fitgear-catalog-low-stock">Only {product.stock} left in stock</span>
                     ) : (
-                      <span className="in-stock">In Stock</span>
+                      <span className="fitgear-catalog-in-stock">In Stock</span>
                     )}
                   </div>
                   
-                  <div className="product-footer">
-                    <div className="product-price">${product.price}</div>
+                  <div className="fitgear-catalog-product-footer">
+                    <div className="fitgear-catalog-product-price">${product.price}</div>
                     
-                    <div className="ratings">
-                      <div className="stars">
+                    <div className="fitgear-catalog-ratings">
+                      <div className="fitgear-catalog-stars">
                         {renderStars(product.rating)}
                       </div>
-                      <span className="review-count">({product.reviews})</span>
+                      <span className="fitgear-catalog-review-count">({product.reviews})</span>
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
         
-        {/* More Products */}
         {displayProducts.length > 3 && (
-          <div className="products-container">
-            <div className="products-grid">
+          <div className="fitgear-catalog-products-container">
+            <div className="fitgear-catalog-products-grid">
               {displayProducts.slice(3).map(product => (
-                <div key={product.id} className="product-card">
+                <Link href={`/products/${product.id}`} key={product.id} className="fitgear-catalog-product-card">
                   {product.badge && (
-                    <div className={`product-badge badge-${product.badge}`}>
+                    <div className={`fitgear-catalog-product-badge fitgear-catalog-badge-${product.badge}`}>
                       {product.badge === 'bestseller' ? 'Best Seller' : 'New Arrival'}
                     </div>
                   )}
                   
-                  <div className="product-image-container">
+                  <div className="fitgear-catalog-product-image-container">
                     <img 
                       src={product.image} 
                       alt={product.name} 
-                      className="product-image"
+                      className="fitgear-catalog-product-image"
                     />
                     
-                    <div className="product-thumbnails">
+                    <div className="fitgear-catalog-product-thumbnails">
                       {product.thumbnails.map((thumb, idx) => (
                         <img 
                           key={idx} 
                           src={thumb} 
                           alt={`${product.name} view ${idx+1}`} 
-                          className="thumbnail"
+                          className="fitgear-catalog-thumbnail"
                         />
                       ))}
                     </div>
                     
-                    <div className="quick-actions">
-                      <button className="action-button">
+                    <div className="fitgear-catalog-quick-actions">
+                      <button className="fitgear-catalog-action-button" onClick={(e) => e.preventDefault()}>
                         <FaHeart />
                       </button>
-                      <button className="action-button">
+                      <button className="fitgear-catalog-action-button" onClick={(e) => e.preventDefault()}>
                         <FaExchangeAlt />
                       </button>
                     </div>
                   </div>
                   
-                  <div className="product-info">
-                    <div className="product-category">{product.category}</div>
-                    <h3 className="product-title">{product.name}</h3>
+                  <div className="fitgear-catalog-product-info">
+                    <div className="fitgear-catalog-product-category">{product.category}</div>
+                    <h3 className="fitgear-catalog-product-title">{product.name}</h3>
                     
-                    <div className="product-specs">
+                    <div className="fitgear-catalog-product-specs">
                       {product.specs.map((spec, idx) => (
-                        <div key={idx} className="spec-item">
-                          <span className="spec-icon">{spec.icon}</span>
+                        <div key={idx} className="fitgear-catalog-spec-item">
+                          <span className="fitgear-catalog-spec-icon">{spec.icon}</span>
                           <span>{spec.text}</span>
                         </div>
                       ))}
                     </div>
                     
-                    <p className="product-description">{product.description}</p>
+                    <p className="fitgear-catalog-product-description">{product.description}</p>
                     
-                    <div className="color-options">
+                    <div className="fitgear-catalog-color-options">
                       {product.colors.map((color, idx) => (
                         <div 
                           key={idx} 
-                          className={`color-option ${idx === 0 ? 'active' : ''}`} 
+                          className={`fitgear-catalog-color-option ${idx === 0 ? 'active' : ''}`} 
                           style={{ backgroundColor: color }}
                         ></div>
                       ))}
                     </div>
                     
-                    <div className="stock-indicator">
+                    <div className="fitgear-catalog-stock-indicator">
                       {product.stock <= 5 ? (
-                        <span className="low-stock">Only {product.stock} left in stock</span>
+                        <span className="fitgear-catalog-low-stock">Only {product.stock} left in stock</span>
                       ) : (
-                        <span className="in-stock">In Stock</span>
+                        <span className="fitgear-catalog-in-stock">In Stock</span>
                       )}
                     </div>
                     
-                    <div className="product-footer">
-                      <div className="product-price">${product.price}</div>
+                    <div className="fitgear-catalog-product-footer">
+                      <div className="fitgear-catalog-product-price">${product.price}</div>
                       
-                      <div className="ratings">
-                        <div className="stars">
+                      <div className="fitgear-catalog-ratings">
+                        <div className="fitgear-catalog-stars">
                           {renderStars(product.rating)}
                         </div>
-                        <span className="review-count">({product.reviews})</span>
+                        <span className="fitgear-catalog-review-count">({product.reviews})</span>
                       </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
         )}
         
-        {/* Recently Viewed Section */}
-        <section className="recently-viewed">
-          <div className="recently-viewed-header">
-            <h2 className="recently-viewed-title">Recently Viewed</h2>
-            <a href="#" className="view-all">View All</a>
+        <section className="fitgear-catalog-recently-viewed">
+          <div className="fitgear-catalog-recently-viewed-header">
+            <h2 className="fitgear-catalog-recently-viewed-title">Recently Viewed</h2>
+            <a href="#" className="fitgear-catalog-view-all">View All</a>
           </div>
           
-          <div className="horizontal-scroll">
+          <div className="fitgear-catalog-horizontal-scroll">
             {recentlyViewed.map(product => (
-              <div key={product.id} className="product-card scroll-card">
-                <div className="product-image-container">
+              <div key={product.id} className="fitgear-catalog-product-card fitgear-catalog-scroll-card">
+                <div className="fitgear-catalog-product-image-container">
                   <img 
                     src={product.image} 
                     alt={product.name} 
-                    className="product-image"
+                    className="fitgear-catalog-product-image"
                   />
                 </div>
                 
-                <div className="product-info">
-                  <h3 className="product-title">{product.name}</h3>
-                  <div className="product-footer">
-                    <div className="product-price">${product.price}</div>
-                    <div className="stars">
+                <div className="fitgear-catalog-product-info">
+                  <h3 className="fitgear-catalog-product-title">{product.name}</h3>
+                  <div className="fitgear-catalog-product-footer">
+                    <div className="fitgear-catalog-product-price">${product.price}</div>
+                    <div className="fitgear-catalog-stars">
                       {renderStars(product.rating)}
                     </div>
                   </div>
