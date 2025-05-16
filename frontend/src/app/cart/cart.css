@@ -239,10 +239,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #0072e5;
+  background-color: var(--orange-primary);
   color: #fff;
   border: none;
-  border-radius: 50px;
+  border-radius: 30px;
   padding: 0;
   height: 56px;
   font-size: 1.1rem;
@@ -251,12 +251,13 @@
   transition: all 0.3s ease;
   width: 100%;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(0, 114, 229, 0.3);
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
 }
 
 .fitgear-checkout-btn:hover {
-  background-color: #0062c4;
+  background-color: var(--orange-hover);
   transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
 }
 
 /* Responsive adjustments */

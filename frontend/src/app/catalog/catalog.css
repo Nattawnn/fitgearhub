@@ -21,7 +21,7 @@
   --transition-slow: 500ms ease;
 }
 
-.catalog-page {
+.fitgear-catalog-page {
   min-height: 100vh;
   background-color: #fafafa;
   padding-top: 0; /* Remove top padding to eliminate gap */
@@ -30,7 +30,7 @@
 }
 
 /* Enhanced Premium Header Styles */
-.catalog-header {
+.fitgear-catalog-header {
   background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 50%, var(--primary-light) 100%);
   padding: 100px 0 60px; /* Increase top padding to account for header height */
   margin-bottom: 40px;
@@ -40,7 +40,7 @@
   overflow: hidden;
 }
 
-.catalog-header::before {
+.fitgear-catalog-header::before {
   content: '';
   position: absolute;
   top: 0;
@@ -51,7 +51,7 @@
   z-index: 0;
 }
 
-.catalog-header-content {
+.fitgear-catalog-header-content {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -62,7 +62,7 @@
   z-index: 1;
 }
 
-.catalog-title {
+.fitgear-catalog-title {
   font-size: 48px;
   font-weight: 800;
   margin-bottom: 15px;
@@ -73,7 +73,7 @@
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-.catalog-title::after {
+.fitgear-catalog-title::after {
   content: '';
   position: absolute;
   width: 80px;
@@ -84,7 +84,7 @@
   transform: translateX(-50%);
 }
 
-.catalog-subtitle {
+.fitgear-catalog-subtitle {
   font-size: 20px;
   font-weight: 400;
   opacity: 0.9;
@@ -96,34 +96,34 @@
 }
 
 /* Premium Product Grid */
-.products-container {
+.fitgear-catalog-products-container {
   margin-top: 40px;
 }
 
-.products-grid {
+.fitgear-catalog-products-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 30px;
 }
 
-.featured-row {
+.fitgear-catalog-featured-row {
   margin-bottom: 60px;
 }
 
-.featured-header {
+.fitgear-catalog-featured-header {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
 }
 
-.featured-title {
+.fitgear-catalog-featured-title {
   font-size: 24px;
   font-weight: 600;
   position: relative;
   padding-bottom: 8px;
 }
 
-.featured-title:after {
+.fitgear-catalog-featured-title:after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -133,7 +133,7 @@
   background: var(--accent-color);
 }
 
-.featured-line {
+.fitgear-catalog-featured-line {
   flex: 1;
   height: 1px;
   background: var(--border-color);
@@ -141,21 +141,23 @@
 }
 
 /* Premium Product Card */
-.product-card {
-  background: var(--card-bg);
-  border-radius: 10px;
+.fitgear-catalog-product-card {
+  background: white;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  transition: var(--transition-normal);
-  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  text-decoration: none;
+  color: inherit;
+  display: block;
 }
 
-.product-card:hover {
+.fitgear-catalog-product-card:hover {
   transform: translateY(-5px);
   box-shadow: var(--shadow-lg);
 }
 
-.product-badge {
+.fitgear-catalog-product-badge {
   position: absolute;
   top: 15px;
   left: 15px;
@@ -167,35 +169,35 @@
   z-index: 5;
 }
 
-.badge-new {
+.fitgear-catalog-badge-new {
   background: var(--info-color);
   color: white;
 }
 
-.badge-bestseller {
+.fitgear-catalog-badge-bestseller {
   background: var(--accent-color);
   color: white;
 }
 
-.product-image-container {
+.fitgear-catalog-product-image-container {
   height: 360px;
   position: relative;
   overflow: hidden;
   background: #f8f8f8;
 }
 
-.product-image {
+.fitgear-catalog-product-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: var(--transition-slow);
 }
 
-.product-card:hover .product-image {
+.fitgear-catalog-product-card:hover .fitgear-catalog-product-image {
   transform: scale(1.05);
 }
 
-.product-thumbnails {
+.fitgear-catalog-product-thumbnails {
   position: absolute;
   bottom: 10px;
   left: 0;
@@ -209,12 +211,12 @@
   transition: var(--transition-normal);
 }
 
-.product-card:hover .product-thumbnails {
+.fitgear-catalog-product-card:hover .fitgear-catalog-product-thumbnails {
   opacity: 1;
   transform: translateY(0);
 }
 
-.thumbnail {
+.fitgear-catalog-thumbnail {
   width: 40px;
   height: 40px;
   border-radius: 4px;
@@ -224,11 +226,11 @@
   transition: var(--transition-fast);
 }
 
-.thumbnail:hover {
+.fitgear-catalog-thumbnail:hover {
   transform: scale(1.1);
 }
 
-.quick-actions {
+.fitgear-catalog-quick-actions {
   position: absolute;
   top: 15px;
   right: 15px;
@@ -240,12 +242,12 @@
   transition: var(--transition-normal);
 }
 
-.product-card:hover .quick-actions {
+.fitgear-catalog-product-card:hover .fitgear-catalog-quick-actions {
   opacity: 1;
   transform: translateX(0);
 }
 
-.action-button {
+.fitgear-catalog-action-button {
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -259,17 +261,17 @@
   transition: var(--transition-fast);
 }
 
-.action-button:hover {
+.fitgear-catalog-action-button:hover {
   background: var(--accent-color);
   color: white;
   transform: scale(1.1);
 }
 
-.product-info {
+.fitgear-catalog-product-info {
   padding: 20px;
 }
 
-.product-category {
+.fitgear-catalog-product-category {
   font-size: 12px;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -277,24 +279,24 @@
   margin-bottom: 8px;
 }
 
-.product-title {
+.fitgear-catalog-product-title {
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 8px;
   transition: var(--transition-fast);
 }
 
-.product-card:hover .product-title {
+.fitgear-catalog-product-card:hover .fitgear-catalog-product-title {
   color: var(--accent-color);
 }
 
-.product-specs {
+.fitgear-catalog-product-specs {
   display: flex;
   gap: 15px;
   margin-bottom: 10px;
 }
 
-.spec-item {
+.fitgear-catalog-spec-item {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -302,12 +304,12 @@
   color: var(--text-muted);
 }
 
-.spec-icon {
+.fitgear-catalog-spec-icon {
   font-size: 14px;
   color: var(--primary-light);
 }
 
-.product-description {
+.fitgear-catalog-product-description {
   font-size: 14px;
   line-height: 1.5;
   color: var(--text-dark);
@@ -318,26 +320,26 @@
   overflow: hidden;
 }
 
-.product-footer {
+.fitgear-catalog-product-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 10px;
 }
 
-.product-price {
+.fitgear-catalog-product-price {
   font-size: 20px;
   font-weight: 700;
   color: var(--text-dark);
 }
 
-.ratings {
+.fitgear-catalog-ratings {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.stars {
+.fitgear-catalog-stars {
   display: flex;
   gap: 2px;
 }
@@ -347,18 +349,18 @@
   font-size: 14px;
 }
 
-.review-count {
+.fitgear-catalog-review-count {
   font-size: 12px;
   color: var(--text-muted);
 }
 
-.color-options {
+.fitgear-catalog-color-options {
   display: flex;
   gap: 6px;
   margin-top: 10px;
 }
 
-.color-option {
+.fitgear-catalog-color-option {
   width: 16px;
   height: 16px;
   border-radius: 50%;
@@ -368,22 +370,23 @@
   cursor: pointer;
 }
 
-.color-option:hover, .color-option.active {
+.fitgear-catalog-color-option:hover, 
+.fitgear-catalog-color-option.active {
   transform: scale(1.2);
   box-shadow: 0 0 0 1px var(--accent-color);
 }
 
-.stock-indicator {
+.fitgear-catalog-stock-indicator {
   font-size: 12px;
   font-weight: 500;
   margin-top: 8px;
 }
 
-.in-stock {
+.fitgear-catalog-in-stock {
   color: var(--success-color);
 }
 
-.low-stock {
+.fitgear-catalog-low-stock {
   color: var(--accent-color);
 }
 
@@ -472,25 +475,25 @@
 }
 
 /* Recently Viewed Section */
-.recently-viewed {
+.fitgear-catalog-recently-viewed {
   margin-top: 60px;
 }
 
-.recently-viewed-header {
+.fitgear-catalog-recently-viewed-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 25px;
 }
 
-.recently-viewed-title {
+.fitgear-catalog-recently-viewed-title {
   font-size: 24px;
   font-weight: 600;
   position: relative;
   padding-bottom: 8px;
 }
 
-.recently-viewed-title:after {
+.fitgear-catalog-recently-viewed-title:after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -500,18 +503,18 @@
   background: var(--accent-color);
 }
 
-.view-all {
+.fitgear-catalog-view-all {
   font-size: 14px;
   font-weight: 500;
   color: var(--accent-color);
   transition: var(--transition-fast);
 }
 
-.view-all:hover {
+.fitgear-catalog-view-all:hover {
   color: var(--primary-color);
 }
 
-.horizontal-scroll {
+.fitgear-catalog-horizontal-scroll {
   display: flex;
   gap: 20px;
   overflow-x: auto;
@@ -520,16 +523,16 @@
   scrollbar-width: none;
 }
 
-.horizontal-scroll::-webkit-scrollbar {
+.fitgear-catalog-horizontal-scroll::-webkit-scrollbar {
   display: none;
 }
 
-.scroll-card {
+.fitgear-catalog-scroll-card {
   flex: 0 0 280px;
 }
 
 /* Container for consistent layout */
-.container {
+.fitgear-catalog-container {
   max-width: 1600px;
   margin: 0 auto;
   padding-left: 100px;
@@ -539,7 +542,7 @@
 }
 
 @media (max-width: 1600px) {
-  .container {
+  .fitgear-catalog-container {
     max-width: 1280px;
     padding-left: 50px;
     padding-right: 50px;
@@ -547,32 +550,32 @@
 }
 
 @media (max-width: 1280px) {
-  .container {
+  .fitgear-catalog-container {
     max-width: 100%;
     padding-left: 30px;
     padding-right: 30px;
   }
 
-  .products-grid {
+  .fitgear-catalog-products-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 768px) {
-  .container {
+  .fitgear-catalog-container {
     padding-left: 20px;
     padding-right: 20px;
   }
   
-  .catalog-title {
+  .fitgear-catalog-title {
     font-size: 36px;
   }
   
-  .catalog-subtitle {
+  .fitgear-catalog-subtitle {
     font-size: 18px;
   }
   
-  .catalog-header {
+  .fitgear-catalog-header {
     padding: 80px 0 50px; /* Adjust padding for smaller screens */
   }
   
@@ -580,29 +583,29 @@
     flex: 0 0 300px;
   }
   
-  .scroll-card {
+  .fitgear-catalog-scroll-card {
     flex: 0 0 240px;
   }
 }
 
 @media (max-width: 576px) {
-  .catalog-title {
+  .fitgear-catalog-title {
     font-size: 30px;
   }
   
-  .catalog-subtitle {
+  .fitgear-catalog-subtitle {
     font-size: 16px;
   }
   
-  .catalog-header {
+  .fitgear-catalog-header {
     padding: 70px 0 40px; /* Further adjust padding for smallest screens */
   }
   
-  .products-grid {
+  .fitgear-catalog-products-grid {
     grid-template-columns: 1fr;
   }
   
-  .product-image-container {
+  .fitgear-catalog-product-image-container {
     height: 300px;
   }
 }
