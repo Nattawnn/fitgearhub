@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from .models import Order, OrderItem, OrderStatusHistory
+from .models import Order, OrderItem, Shipment, Payment
 from apps.products.serializers import ProductSerializer
+from apps.users.serializers import UserSerializer
 
 class OrderItemSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
@@ -8,21 +9,26 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderItem
-        fields = ['id', 'product', 'product_id', 'quantity', 'price']
+        fields = ['order_item_id', 'product', 'product_id', 'quantity', 'price']
 
-class OrderStatusHistorySerializer(serializers.ModelSerializer):
+class ShipmentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = OrderStatusHistory
-        fields = ['id', 'status', 'created_at', 'note']
+        model = Shipment
+        fields = ['shipment_id', 'shipment_date', 'address', 'city', 
+                 'state', 'country', 'zip_code']
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = ['payment_id', 'payment_date', 'payment_method', 'amount']
 
 class OrderSerializer(serializers.ModelSerializer):
+    customer = UserSerializer(read_only=True)
     items = OrderItemSerializer(many=True, read_only=True)
-    status_history = OrderStatusHistorySerializer(many=True, read_only=True)
-    total_amount = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
+    shipment = ShipmentSerializer(read_only=True)
+    payment = PaymentSerializer(read_only=True)
 
     class Meta:
         model = Order
-        fields = ['id', 'order_number', 'user', 'created_at', 'updated_at', 
-                 'status', 'total_amount', 'shipping_address', 'payment_method', 
-                 'payment_status', 'tracking_number', 'items', 'status_history']
-        read_only_fields = ['user', 'order_number', 'total_amount']
+        fields = ['order_id', 'customer', 'order_date', 'total_price', 
+                 'items', 'shipment', 'payment']
