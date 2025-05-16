@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { FaChevronDown } from 'react-icons/fa';
 import { usePathname, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import './header.css';
 import SearchHeader from './header/SearchHeader';
 import CartHeader from './header/CartHeader';
@@ -101,7 +102,7 @@ export default function Header() {
       >
         <div className="container header-container">
           <div className="logo-container">
-            <span className="logo">FitGear Hub</span>
+            <Link href="/catalog" className="logo">FitGear Hub</Link>
           </div>
           
           <nav className="main-nav">
