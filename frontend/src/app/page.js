@@ -32,11 +32,12 @@ export default function Home() {
           <div className="products-grid">
             <div className="product-column">
               <div className="product-card">
-                <Image 
+                <img 
                   src="https://res.cloudinary.com/dstl8qazf/image/upload/v1746800160/b2zemgektesep1nqfirh.png" 
                   alt="Boxing Gloves" 
-                  width={382} 
-                  height={532} 
+                  width="100%"
+                  height="100%"
+                  style={{ objectFit: 'cover' }}
                 />
                 <h3 className="product-title-overlay">Boxing Gloves</h3>
               </div>
@@ -51,11 +52,12 @@ export default function Home() {
 
             <div className="product-column">
               <div className="product-card">
-                <Image 
+                <img 
                   src="https://res.cloudinary.com/dstl8qazf/image/upload/v1746800238/vhorpxgcge2ommmcy3pl.png" 
                   alt="Stud Shoes" 
-                  width={385} 
-                  height={532} 
+                  width="100%"
+                  height="100%"
+                  style={{ objectFit: 'cover' }}
                 />
                 <h3 className="product-title-overlay">Stud Shoes</h3>
               </div>
@@ -70,11 +72,12 @@ export default function Home() {
 
             <div className="product-column">
               <div className="product-card">
-                <Image 
+                <img 
                   src="https://res.cloudinary.com/dstl8qazf/image/upload/v1746800242/ucobyaucgrxgvyksfm5a.png" 
                   alt="Dumbbells" 
-                  width={381} 
-                  height={532} 
+                  width="100%"
+                  height="100%"
+                  style={{ objectFit: 'cover' }}
                 />
                 <h3 className="product-title-overlay">Dumbbells</h3>
               </div>
@@ -96,7 +99,13 @@ export default function Home() {
           <div className="categories-grid">
             <div className="category-card sport">
               <div className="category-image-wrapper">
-                <Image src="https://res.cloudinary.com/dstl8qazf/image/upload/v1746887101/zdmrctdccvhupgarac5l.png" alt="Sport" width={591} height={926} />
+                <img 
+                  src="https://res.cloudinary.com/dstl8qazf/image/upload/v1746887101/zdmrctdccvhupgarac5l.png" 
+                  alt="Sport" 
+                  width="100%" 
+                  height="100%" 
+                  style={{ objectFit: 'cover' }}
+                />
                 <div className="category-overlay-text">
                   <h3>SPORT</h3>
                   <a href="#" className="see-more">see more →</a>
@@ -105,7 +114,13 @@ export default function Home() {
             </div>
             <div className="category-card fitness">
               <div className="category-image-wrapper">
-                <Image src="https://res.cloudinary.com/dstl8qazf/image/upload/v1746887116/qcw8x6sbgzeecdrs3oiz.png" alt="Fitness" width={596} height={926} />
+                <img 
+                  src="https://res.cloudinary.com/dstl8qazf/image/upload/v1746887116/qcw8x6sbgzeecdrs3oiz.png" 
+                  alt="Fitness" 
+                  width="100%" 
+                  height="100%" 
+                  style={{ objectFit: 'cover' }}
+                />
                 <div className="category-overlay-text">
                   <h3>Fitness</h3>
                   <a href="#" className="see-more">see more →</a>

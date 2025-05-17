@@ -162,6 +162,7 @@
   box-shadow: 0 8px 30px rgba(0,0,0,0.15);
   width: 100%;
   transition: all 0.3s ease;
+  aspect-ratio: 1/1.4;
 }
 
 .product-card:hover {
@@ -176,7 +177,7 @@
 
 .product-card img {
   width: 100%;
-  height: 532px;
+  height: 100%;
   object-fit: cover;
   display: block;
   transition: all 0.5s ease;
@@ -302,6 +303,7 @@
   height: 100%;
   background: rgba(0,0,0,0.4);
   transition: all 0.3s ease;
+  z-index: 1;
 }
 
 .category-card:hover .category-image-wrapper::after {
