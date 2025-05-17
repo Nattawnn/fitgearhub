@@ -26,19 +26,38 @@ export default function AdminProducts() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // API base URL
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+  // API base URL - using environment variable with fallback to development URL
+  // In production on Render, use the proper backend URL
+  const API_BASE_URL = 
+    process.env.NEXT_PUBLIC_API_URL || 
+    (typeof window !== 'undefined' && window.location.hostname.includes('render.com') 
+      ? 'https://fitgearhub-backend.onrender.com/api' 
+      : 'http://localhost:8000/api');
 
   useEffect(() => {
+    console.log('Using API URL:', API_BASE_URL);
     fetchProducts();
     fetchCategories();
   }, []);
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/products/`);
-      if (!response.ok) throw new Error('Failed to fetch products');
+      console.log('Fetching products from:', `${API_BASE_URL}/products/`);
+      const response = await fetch(`${API_BASE_URL}/products/`, {
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response text:', errorText);
+        throw new Error('Failed to fetch products');
+      }
+      
       const data = await response.json();
+      console.log('Products data:', data);
+      
       // Ensure products is always an array
       setProducts(Array.isArray(data) ? data : (data.results || []));
       setLoading(false);
@@ -52,8 +71,19 @@ export default function AdminProducts() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/categories/`);
-      if (!response.ok) throw new Error('Failed to fetch categories');
+      console.log('Fetching categories from:', `${API_BASE_URL}/categories/`);
+      const response = await fetch(`${API_BASE_URL}/categories/`, {
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response text:', errorText);
+        throw new Error('Failed to fetch categories');
+      }
+      
       const data = await response.json();
       
       // Ensure categories is always an array
@@ -111,17 +141,30 @@ export default function AdminProducts() {
     }
 
     try {
+      console.log('Creating category with data:', categoryFormData);
       const response = await fetch(`${API_BASE_URL}/categories/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
         body: JSON.stringify(categoryFormData),
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Failed to create category');
+        const errorText = await response.text();
+        console.error('Error response text:', errorText);
+        
+        let errorMessage = 'Failed to create category';
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.detail || errorMessage;
+        } catch (e) {
+          // If parsing fails, use the status text
+          errorMessage = `Failed to create category: ${response.status} ${response.statusText}`;
+        }
+        
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
@@ -166,6 +209,9 @@ export default function AdminProducts() {
       const response = await fetch(`${API_BASE_URL}/products/`, {
         method: 'POST',
         body: productData,
+        headers: {
+          'Accept': 'application/json',
+        },
       });
 
       if (!response.ok) {
@@ -173,14 +219,16 @@ export default function AdminProducts() {
         const errorText = await response.text();
         console.error('Error text:', errorText);
         
-        let errorData;
+        let errorMessage = 'Failed to create product';
         try {
-          errorData = JSON.parse(errorText);
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.detail || errorMessage;
         } catch (e) {
-          throw new Error(`Failed to create product: ${response.status} ${response.statusText}`);
+          // If parsing fails, use the status text
+          errorMessage = `Failed to create product: ${response.status} ${response.statusText}`;
         }
         
-        throw new Error(errorData.detail || 'Failed to create product');
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
