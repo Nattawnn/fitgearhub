@@ -1,61 +1,38 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { FaTrash, FaArrowLeft } from 'react-icons/fa';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import './cart.css';
+import { useCart } from '../contexts/CartContext';
 
 export default function Cart() {
-  // Sample cart items - in a real app, this would come from context/state management
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: 'Premium Running Shoes',
-      price: 129.99,
-      quantity: 1,
-      image: '/images/product-1.jpg'
-    },
-    {
-      id: 2,
-      name: 'Fitness Tracker Watch',
-      price: 89.99,
-      quantity: 2,
-      image: '/images/product-2.jpg'
-    },
-    {
-      id: 3,
-      name: 'Performance Compression Shirt',
-      price: 49.99,
-      quantity: 1,
-      image: '/images/product-3.jpg'
+  const router = useRouter();
+  const { 
+    cartItems, 
+    removeFromCart, 
+    updateQuantity, 
+    calculateSubtotal, 
+    calculateTax, 
+    calculateShipping, 
+    calculateTotal 
+  } = useCart();
+
+  // Helper function to format price
+  const formatPrice = (price) => {
+    // Ensure price is a number before calling toFixed
+    const numPrice = parseFloat(price);
+    return !isNaN(numPrice) ? numPrice.toFixed(2) : '0.00';
+  };
+
+  const handleProceedToCheckout = () => {
+    if (cartItems.length === 0) {
+      alert('Your cart is empty. Add some items before proceeding to checkout.');
+      return;
     }
-  ]);
-
-  const removeFromCart = (id) => {
-    setCartItems(cartItems.filter(item => item.id !== id));
-  };
-
-  const updateQuantity = (id, newQuantity) => {
-    if (newQuantity < 1) return;
-    setCartItems(cartItems.map(item => 
-      item.id === id ? {...item, quantity: newQuantity} : item
-    ));
-  };
-
-  const calculateSubtotal = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-  };
-
-  const calculateTax = () => {
-    return calculateSubtotal() * 0.07; // 7% tax
-  };
-
-  const calculateShipping = () => {
-    return cartItems.length > 0 ? 9.99 : 0;
-  };
-
-  const calculateTotal = () => {
-    return calculateSubtotal() + calculateTax() + calculateShipping();
+    
+    router.push('/checkout');
   };
 
   return (
@@ -91,30 +68,39 @@ export default function Cart() {
                   <div className="fitgear-cart-item-row" key={item.id}>
                     <div className="fitgear-product-col">
                       <div className="fitgear-product-image">
-                        <div className="fitgear-placeholder-image"></div>
+                        {item.images && item.images.length > 0 ? (
+                          <img 
+                            src={item.images[0].image} 
+                            alt={item.name} 
+                            className="fitgear-product-thumbnail"
+                          />
+                        ) : (
+                          <div className="fitgear-placeholder-image"></div>
+                        )}
                       </div>
                       <div className="fitgear-product-details">
                         <h3>{item.name}</h3>
                         <p className="fitgear-product-id">SKU: FG-{item.id}00{item.id}</p>
+                        {item.size && <p className="fitgear-product-size">Size: {item.size}</p>}
                       </div>
                     </div>
                     
-                    <div className="fitgear-price-col">${item.price.toFixed(2)}</div>
+                    <div className="fitgear-price-col">${formatPrice(item.price)}</div>
                     
                     <div className="fitgear-quantity-col">
                       <div className="fitgear-quantity-control">
-                        <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
+                        <button onClick={() => updateQuantity(item.id, item.quantity - 1, item.size)}>-</button>
                         <input type="text" value={item.quantity} readOnly />
-                        <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
+                        <button onClick={() => updateQuantity(item.id, item.quantity + 1, item.size)}>+</button>
                       </div>
                     </div>
                     
-                    <div className="fitgear-total-col">${(item.price * item.quantity).toFixed(2)}</div>
+                    <div className="fitgear-total-col">${formatPrice(item.price * item.quantity)}</div>
                     
                     <div className="fitgear-action-col">
                       <button 
                         className="fitgear-remove-item" 
-                        onClick={() => removeFromCart(item.id)}
+                        onClick={() => removeFromCart(item.id, item.size)}
                         aria-label="Remove item"
                       >
                         <FaTrash />
@@ -133,25 +119,31 @@ export default function Cart() {
             
             <div className="fitgear-summary-row">
               <span>Subtotal</span>
-              <span>${calculateSubtotal().toFixed(2)}</span>
+              <span>${formatPrice(calculateSubtotal())}</span>
             </div>
             
             <div className="fitgear-summary-row">
               <span>Tax (7%)</span>
-              <span>${calculateTax().toFixed(2)}</span>
+              <span>${formatPrice(calculateTax())}</span>
             </div>
             
             <div className="fitgear-summary-row">
               <span>Shipping</span>
-              <span>${calculateShipping().toFixed(2)}</span>
+              <span>${formatPrice(calculateShipping())}</span>
             </div>
             
             <div className="fitgear-summary-row fitgear-total">
               <span>Total</span>
-              <span>${calculateTotal().toFixed(2)}</span>
+              <span>${formatPrice(calculateTotal())}</span>
             </div>
             
-            <button className="fitgear-checkout-btn">Proceed to Checkout</button>
+            <button 
+              className="fitgear-checkout-btn" 
+              onClick={handleProceedToCheckout}
+              disabled={cartItems.length === 0}
+            >
+              Proceed to Checkout
+            </button>
           </div>
         )}
       </div>

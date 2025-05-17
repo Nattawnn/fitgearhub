@@ -1,66 +1,66 @@
 'use client';
 
-import React, { useState, forwardRef } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import { FaShoppingCart, FaTimes, FaTrash } from 'react-icons/fa';
 import './CartHeader.css';
 import { useRouter } from 'next/navigation';
+import { useCart } from '../../contexts/CartContext';
 
-const CartHeader = forwardRef(({ cartOpen, setCartOpen, setProfileOpen }, ref) => {
+const CartHeader = forwardRef(({ setCartOpen, setProfileOpen }, ref) => {
   const router = useRouter();
-  // Sample cart items - in a real app, this would come from context/state management
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: 'Premium Running Shoes',
-      price: 129.99,
-      quantity: 1,
-      image: '/images/product-1.jpg'
-    },
-    {
-      id: 2,
-      name: 'Fitness Tracker Watch',
-      price: 89.99,
-      quantity: 2,
-      image: '/images/product-2.jpg'
-    }
-  ]);
+  const { 
+    cartItems, 
+    cartCount, 
+    isCartOpen,
+    openCart,
+    closeCart,
+    toggleCart,
+    removeFromCart, 
+    updateQuantity, 
+    calculateTotal 
+  } = useCart();
 
-  const toggleCart = () => {
-    setCartOpen(!cartOpen);
-    if (setProfileOpen) setProfileOpen(false);
-  };
+  // Sync the external cartOpen state with our context state
+  useEffect(() => {
+    setCartOpen(isCartOpen);
+  }, [isCartOpen, setCartOpen]);
 
-  const removeFromCart = (id) => {
-    setCartItems(cartItems.filter(item => item.id !== id));
-  };
-
-  const updateQuantity = (id, newQuantity) => {
-    if (newQuantity < 1) return;
-    setCartItems(cartItems.map(item => 
-      item.id === id ? {...item, quantity: newQuantity} : item
-    ));
-  };
-
-  const calculateTotal = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
+  const handleToggleCart = () => {
+    toggleCart();
+    if (setProfileOpen && isCartOpen) setProfileOpen(false);
   };
 
   const handleViewCart = () => {
-    setCartOpen(false);
+    closeCart();
     router.push('/cart');
+  };
+
+  const handleCheckout = () => {
+    closeCart();
+    router.push('/checkout');
+  };
+
+  // Helper function to format price
+  const formatPrice = (price) => {
+    // Ensure price is a number before calling toFixed
+    const numPrice = parseFloat(price);
+    return !isNaN(numPrice) ? numPrice.toFixed(2) : '0.00';
   };
 
   return (
     <div className="cart-container">
-      <FaShoppingCart className={`icon icon-cart ${cartOpen ? 'active' : ''}`} onClick={toggleCart} />
-      {cartItems.length > 0 && (
-        <span className="cart-count">{cartItems.reduce((total, item) => total + item.quantity, 0)}</span>
+      <FaShoppingCart 
+        className={`icon icon-cart ${isCartOpen ? 'active' : ''}`} 
+        onClick={handleToggleCart} 
+      />
+      {cartCount > 0 && (
+        <span className="cart-count">{cartCount}</span>
       )}
-      {cartOpen && (
+      {isCartOpen && (
         <div className="cart-dropdown" ref={ref}>
           <div className="cart-header">
             <h3>Your Cart</h3>
-            <span className="cart-close" onClick={toggleCart}><FaTimes /></span>
+            <span className="cart-close" onClick={handleToggleCart}><FaTimes /></span>
           </div>
           
           {cartItems.length === 0 ? (
@@ -73,20 +73,24 @@ const CartHeader = forwardRef(({ cartOpen, setCartOpen, setProfileOpen }, ref) =
                 {cartItems.map(item => (
                   <div className="cart-item" key={item.id}>
                     <div className="cart-item-image">
-                      <div className="placeholder-image"></div>
+                      {item.images && item.images.length > 0 ? (
+                        <img src={item.images[0].image} alt={item.name} className="cart-item-img" />
+                      ) : (
+                        <div className="placeholder-image"></div>
+                      )}
                     </div>
                     <div className="cart-item-details">
                       <h4>{item.name}</h4>
-                      <div className="cart-item-price">${item.price.toFixed(2)}</div>
+                      <div className="cart-item-price">${formatPrice(item.price)}</div>
                       <div className="cart-item-actions">
                         <div className="quantity-control">
-                          <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
+                          <button onClick={() => updateQuantity(item.id, item.quantity - 1, item.size)}>-</button>
                           <input type="text" value={item.quantity} readOnly />
-                          <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
+                          <button onClick={() => updateQuantity(item.id, item.quantity + 1, item.size)}>+</button>
                         </div>
                         <button 
                           className="remove-item" 
-                          onClick={() => removeFromCart(item.id)}
+                          onClick={() => removeFromCart(item.id, item.size)}
                           aria-label="Remove item"
                         >
                           <FaTrash />
@@ -96,15 +100,14 @@ const CartHeader = forwardRef(({ cartOpen, setCartOpen, setProfileOpen }, ref) =
                   </div>
                 ))}
               </div>
+
               <div className="cart-footer">
                 <div className="cart-total">
                   <span>Total:</span>
-                  <span>${calculateTotal()}</span>
+                  <span>${formatPrice(calculateTotal())}</span>
                 </div>
-                <div className="cart-buttons">
-                  <button className="view-cart-btn" onClick={handleViewCart}>View Cart</button>
-                  <button className="checkout-btn">Checkout</button>
-                </div>
+                <button className="view-cart-btn" onClick={handleViewCart}>View Cart</button>
+                <button className="checkout-btn" onClick={handleCheckout}>Checkout</button>
               </div>
             </>
           )}

@@ -8,7 +8,7 @@ const Address = ({ onAddressChange }) => {
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [formData, setFormData] = useState({
         fullName: '',
-        tel: '',
+        phoneNumber: '',
         addressDetail: '',
         province: '',
         district: '',
@@ -17,6 +17,7 @@ const Address = ({ onAddressChange }) => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+        console.log(`Input changed: ${name} = ${value}`);
         setFormData(prev => ({
             ...prev,
             [name]: value
@@ -48,7 +49,7 @@ const Address = ({ onAddressChange }) => {
                     <div className="address-info">
                         <div className="address-header">
                             <span className="name">{selectedAddress.fullName}</span>
-                            <span className="phone">{selectedAddress.tel}</span>
+                            <span className="phone">{selectedAddress.phoneNumber}</span>
                         </div>
                         <p className="address-text">
                             {selectedAddress.addressDetail}
@@ -88,9 +89,9 @@ const Address = ({ onAddressChange }) => {
                                 <div className="form-group">
                                     <label>Phone Number</label>
                                     <input
-                                        type="tel"
-                                        name="tel"
-                                        value={formData.tel}
+                                        type="text"
+                                        name="phoneNumber"
+                                        value={formData.phoneNumber}
                                         onChange={handleInputChange}
                                         placeholder="Enter your phone number"
                                         required

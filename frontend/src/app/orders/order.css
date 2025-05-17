@@ -1,11 +1,11 @@
-.order-history-container {
+.fitgear-order-history-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
   min-height: calc(100vh - 80px);
 }
 
-.order-history-title {
+.fitgear-order-history-title {
   font-size: 1.75rem;
   color: #1a1a1a;
   margin-bottom: 2rem;
@@ -13,7 +13,70 @@
   padding-top: 80px;
 }
 
-.order-history-card {
+/* Empty and Loading States */
+.fitgear-empty-orders,
+.fitgear-loading-orders {
+  text-align: center;
+  padding: 4rem 2rem;
+  margin: 2rem auto;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+  max-width: 600px;
+}
+
+.fitgear-empty-icon {
+  font-size: 4rem;
+  color: #ddd;
+  margin-bottom: 1.5rem;
+}
+
+.fitgear-loading-orders {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.fitgear-empty-orders h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.fitgear-empty-orders p {
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.fitgear-shop-now-btn {
+  display: inline-block;
+  background: var(--orange-primary);
+  color: white;
+  padding: 0.8rem 2rem;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+.fitgear-shop-now-btn:hover {
+  background: var(--orange-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
+}
+
+.fitgear-placeholder-image {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f5f5f5 25%, #e9e9e9 25%, #e9e9e9 50%, #f5f5f5 50%, #f5f5f5 75%, #e9e9e9 75%);
+  background-size: 20px 20px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fitgear-order-history-card {
   background: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
@@ -22,11 +85,11 @@
   transition: box-shadow 0.3s ease;
 }
 
-.order-history-card:hover {
+.fitgear-order-history-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.order-history-header {
+.fitgear-order-history-header {
   background: #2c3e50;
   color: white;
   padding: 1rem 1.5rem;
@@ -36,28 +99,28 @@
   align-items: center;
 }
 
-.order-history-header-item {
+.fitgear-order-history-header-item {
   font-size: 0.9rem;
   line-height: 1.5;
 }
 
-.order-history-header-item strong {
+.fitgear-order-history-header-item strong {
   display: block;
   font-size: 1rem;
   font-weight: 500;
   color: #8ce99a;
 }
 
-.order-history-header-total {
+.fitgear-order-history-header-total {
   text-align: right;
 }
 
-.order-history-header-total strong {
+.fitgear-order-history-header-total strong {
   font-size: 1.1rem;
   color: #8ce99a;
 }
 
-.order-history-item {
+.fitgear-order-history-item {
   display: grid;
   grid-template-columns: 120px 1fr 180px;
   gap: 2rem;
@@ -67,11 +130,11 @@
   background: white;
 }
 
-.order-history-item:last-child {
+.fitgear-order-history-item:last-child {
   border-bottom: none;
 }
 
-.order-history-image {
+.fitgear-order-history-image {
   width: 120px;
   height: 120px;
   background: #f8f9fa;
@@ -84,11 +147,11 @@
   transition: transform 0.2s ease;
 }
 
-.order-history-image:hover {
+.fitgear-order-history-image:hover {
   transform: scale(1.05);
 }
 
-.order-history-details {
+.fitgear-order-history-details {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -96,19 +159,19 @@
   flex: 1;
 }
 
-.order-history-name {
+.fitgear-order-history-name {
   font-weight: 600;
   font-size: 1.1rem;
   color: #1a1a1a;
 }
 
-.order-history-description {
+.fitgear-order-history-description {
   color: #666;
   font-size: 0.9rem;
   line-height: 1.4;
 }
 
-.order-history-status {
+.fitgear-order-history-status {
   display: inline-flex;
   align-items: center;
   padding: 0.25rem 0.75rem;
@@ -120,22 +183,22 @@
   width: fit-content;
 }
 
-.order-history-status.delivered {
+.fitgear-order-history-status.delivered {
   background: #d3f9d8;
   color: #2b8a3e;
 }
 
-.order-history-status.processing {
+.fitgear-order-history-status.processing {
   background: #fff3bf;
   color: #e67700;
 }
 
-.order-history-status.shipped {
+.fitgear-order-history-status.shipped {
   background: #d0ebff;
   color: #1971c2;
 }
 
-.order-history-price-quantity {
+.fitgear-order-history-price-quantity {
   text-align: right;
   display: flex;
   flex-direction: column;
@@ -144,18 +207,18 @@
   align-items: flex-end;
 }
 
-.order-history-quantity {
+.fitgear-order-history-quantity {
   color: #666;
   font-size: 0.9rem;
 }
 
-.order-history-price {
+.fitgear-order-history-price {
   font-weight: 600;
   color: #1a1a1a;
   font-size: 1.2rem;
 }
 
-.order-history-view-details {
+.fitgear-order-history-view-details {
   display: inline-block;
   padding: 0.5rem 1rem;
   background: var(--orange-primary);
@@ -172,14 +235,14 @@
   box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
 }
 
-.order-history-view-details:hover {
+.fitgear-order-history-view-details:hover {
   background: var(--orange-hover);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
 }
 
 /* Modal Styles */
-.modal-overlay {
+.fitgear-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -194,7 +257,7 @@
   backdrop-filter: blur(5px);
 }
 
-.modal-content {
+.fitgear-modal-content {
   background: white;
   border-radius: 16px;
   width: 100%;
@@ -203,12 +266,12 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  animation: modalFadeIn 0.3s ease;
+  animation: fitgearModalFadeIn 0.3s ease;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   overflow: hidden;
 }
 
-@keyframes modalFadeIn {
+@keyframes fitgearModalFadeIn {
   from {
     opacity: 0;
     transform: translateY(20px);
@@ -219,7 +282,7 @@
   }
 }
 
-.modal-close {
+.fitgear-modal-close {
   position: absolute;
   top: 1.5rem;
   right: 1.5rem;
@@ -238,12 +301,12 @@
   z-index: 1;
 }
 
-.modal-close:hover {
+.fitgear-modal-close:hover {
   background: rgba(0, 0, 0, 0.1);
   transform: rotate(90deg);
 }
 
-.modal-header {
+.fitgear-modal-header {
   padding: 1.25rem 2rem;
   border-bottom: 1px solid #eee;
   background: linear-gradient(to right, #2c3e50, #3498db);
@@ -252,41 +315,41 @@
   flex-shrink: 0;
 }
 
-.modal-header h2 {
+.fitgear-modal-header h2 {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 600;
 }
 
-.modal-order-id {
+.fitgear-modal-order-id {
   color: rgba(255, 255, 255, 0.8);
   font-size: 0.9rem;
   margin-top: 0.25rem;
 }
 
-.modal-body {
+.fitgear-modal-body {
   padding: 1.5rem;
   flex: 1;
   overflow: hidden;
 }
 
-.modal-main-content {
+.fitgear-modal-main-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
   height: 100%;
 }
 
-.modal-left-section {
+.fitgear-modal-left-section {
   border-right: 1px solid #eee;
   padding-right: 1.5rem;
 }
 
-.modal-right-section {
+.fitgear-modal-right-section {
   padding-left: 0.5rem;
 }
 
-.product-section {
+.fitgear-product-section {
   display: grid;
   grid-template-columns: 150px 1fr;
   gap: 1.25rem;
@@ -294,7 +357,7 @@
   height: 100%;
 }
 
-.modal-product-image {
+.fitgear-modal-product-image {
   width: 150px;
   height: 150px;
   background: #f8f9fa;
@@ -307,13 +370,13 @@
   border: 1px solid #eee;
 }
 
-.modal-product-image img {
+.fitgear-modal-product-image img {
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
 
-.modal-product-info {
+.fitgear-modal-product-info {
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -321,35 +384,35 @@
   padding-right: 0.5rem;
 }
 
-.modal-product-info::-webkit-scrollbar {
+.fitgear-modal-product-info::-webkit-scrollbar {
   width: 4px;
 }
 
-.modal-product-info::-webkit-scrollbar-track {
+.fitgear-modal-product-info::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 4px;
 }
 
-.modal-product-info::-webkit-scrollbar-thumb {
+.fitgear-modal-product-info::-webkit-scrollbar-thumb {
   background: #ccc;
   border-radius: 4px;
 }
 
-.product-header {
+.fitgear-product-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
 }
 
-.product-header h3 {
+.fitgear-product-header h3 {
   margin: 0;
   font-size: 1.25rem;
   color: #2c3e50;
   flex: 1;
 }
 
-.modal-status {
+.fitgear-modal-status {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -360,76 +423,76 @@
   white-space: nowrap;
 }
 
-.modal-status.delivered {
+.fitgear-modal-status.delivered {
   background: #d3f9d8;
   color: #2b8a3e;
 }
 
-.modal-status.processing {
+.fitgear-modal-status.processing {
   background: #fff3bf;
   color: #e67700;
 }
 
-.modal-status.shipped {
+.fitgear-modal-status.shipped {
   background: #d0ebff;
   color: #1971c2;
 }
 
-.product-details {
+.fitgear-product-details {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
 }
 
-.detail-group {
+.fitgear-detail-group {
   background: #f8f9fa;
   border-radius: 8px;
   padding: 1rem;
 }
 
-.detail-group h4 {
+.fitgear-detail-group h4 {
   margin: 0 0 0.75rem 0;
   font-size: 0.95rem;
   color: #2c3e50;
   font-weight: 600;
 }
 
-.modal-description {
+.fitgear-modal-description {
   color: #666;
   margin: 0;
   font-size: 0.9rem;
   line-height: 1.4;
 }
 
-.info-grid {
+.fitgear-info-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.75rem;
 }
 
-.shipping-info {
+.fitgear-shipping-info {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.info-item {
+.fitgear-info-item {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
 
-.info-item span {
+.fitgear-info-item span {
   font-size: 0.85rem;
   color: #666;
 }
 
-.info-item strong {
+.fitgear-info-item strong {
   font-size: 0.95rem;
   color: #2c3e50;
 }
 
-.tracking-section {
+.fitgear-tracking-section {
   height: 100%;
   background: #f8f9fa;
   border-radius: 12px;
@@ -438,13 +501,13 @@
   flex-direction: column;
 }
 
-.tracking-section h3 {
+.fitgear-tracking-section h3 {
   margin: 0 0 1rem 0;
   font-size: 1.25rem;
   color: #2c3e50;
 }
 
-.tracking-timeline {
+.fitgear-tracking-timeline {
   position: relative;
   padding: 0;
   margin: 0;
@@ -454,18 +517,18 @@
   justify-content: space-between;
 }
 
-.timeline-item {
+.fitgear-timeline-item {
   position: relative;
   padding-left: 2rem;
   padding-bottom: 1rem;
   list-style: none;
 }
 
-.timeline-item:last-child {
+.fitgear-timeline-item:last-child {
   padding-bottom: 0;
 }
 
-.timeline-item::before {
+.fitgear-timeline-item::before {
   content: '';
   position: absolute;
   left: 0;
@@ -479,18 +542,18 @@
   z-index: 1;
 }
 
-.timeline-item.completed::before {
+.fitgear-timeline-item.completed::before {
   background: #2ecc71;
   box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.2);
 }
 
-.timeline-item.active::before {
+.fitgear-timeline-item.active::before {
   background: #3498db;
   box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-  animation: pulse 2s infinite;
+  animation: fitgearPulse 2s infinite;
 }
 
-@keyframes pulse {
+@keyframes fitgearPulse {
   0% {
     box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.4);
   }
@@ -502,7 +565,7 @@
   }
 }
 
-.timeline-item::after {
+.fitgear-timeline-item::after {
   content: '';
   position: absolute;
   left: 9px;
@@ -512,15 +575,15 @@
   background: #e9ecef;
 }
 
-.timeline-item:last-child::after {
+.fitgear-timeline-item:last-child::after {
   display: none;
 }
 
-.timeline-item.completed::after {
+.fitgear-timeline-item.completed::after {
   background: #2ecc71;
 }
 
-.timeline-content {
+.fitgear-timeline-content {
   background: white;
   border-radius: 8px;
   padding: 0.75rem 1rem;
@@ -528,25 +591,25 @@
   margin-left: 0.75rem;
 }
 
-.timeline-title {
+.fitgear-timeline-title {
   font-weight: 600;
   color: #2c3e50;
   font-size: 0.9rem;
   margin-bottom: 0.25rem;
 }
 
-.timeline-date {
+.fitgear-timeline-date {
   font-size: 0.8rem;
   color: #666;
   margin-bottom: 0.25rem;
 }
 
-.timeline-location {
+.fitgear-timeline-location {
   font-size: 0.8rem;
   color: #888;
 }
 
-.modal-footer {
+.fitgear-modal-footer {
   padding: 1rem 2rem;
   background: #f8f9fa;
   border-top: 1px solid #eee;
@@ -557,7 +620,7 @@
   flex-shrink: 0;
 }
 
-.modal-btn {
+.fitgear-modal-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -570,116 +633,112 @@
   font-size: 0.9rem;
 }
 
-.modal-btn i {
-  font-size: 1.1rem;
-}
-
-.modal-btn.track-order {
+.fitgear-modal-btn.track-order {
   background: var(--orange-primary);
   color: white;
   box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
 }
 
-.modal-btn.track-order:hover {
+.fitgear-modal-btn.track-order:hover {
   background: var(--orange-hover);
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
 }
 
-.modal-btn.contact-support {
+.fitgear-modal-btn.contact-support {
   background: #e9ecef;
   color: #495057;
 }
 
-.modal-btn.contact-support:hover {
+.fitgear-modal-btn.contact-support:hover {
   background: #dee2e6;
   transform: translateY(-1px);
 }
 
 @media (max-width: 1024px) {
-  .modal-content {
+  .fitgear-modal-content {
     height: min(900px, 90vh);
   }
 
-  .modal-main-content {
+  .fitgear-modal-main-content {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
 
-  .modal-left-section {
+  .fitgear-modal-left-section {
     border-right: none;
     padding-right: 0;
     border-bottom: 1px solid #eee;
     padding-bottom: 1rem;
   }
 
-  .modal-right-section {
+  .fitgear-modal-right-section {
     padding-left: 0;
   }
 
-  .product-section {
+  .fitgear-product-section {
     grid-template-columns: 120px 1fr;
   }
 
-  .modal-product-image {
+  .fitgear-modal-product-image {
     width: 120px;
     height: 120px;
   }
 
-  .tracking-timeline {
+  .fitgear-tracking-timeline {
     gap: 0.5rem;
   }
 
-  .detail-group {
+  .fitgear-detail-group {
     padding: 0.75rem;
   }
 
-  .info-grid {
+  .fitgear-info-grid {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 768px) {
-  .modal-content {
+  .fitgear-modal-content {
     height: 100vh;
     border-radius: 0;
   }
 
-  .modal-header {
+  .fitgear-modal-header {
     padding: 1rem 1.5rem;
   }
 
-  .modal-body {
+  .fitgear-modal-body {
     padding: 1rem;
   }
 
-  .product-section {
+  .fitgear-product-section {
     grid-template-columns: 1fr;
   }
 
-  .modal-product-image {
+  .fitgear-modal-product-image {
     width: 100%;
     height: 160px;
   }
 
-  .product-header {
+  .fitgear-product-header {
     flex-direction: column;
     gap: 0.5rem;
   }
 
-  .modal-status {
+  .fitgear-modal-status {
     align-self: flex-start;
   }
 
-  .modal-details-grid {
+  .fitgear-modal-details-grid {
     grid-template-columns: 1fr;
   }
 
-  .modal-footer {
+  .fitgear-modal-footer {
     padding: 1rem;
   }
 
-  .modal-btn {
+  .fitgear-modal-btn {
     flex: 1;
     justify-content: center;
   }

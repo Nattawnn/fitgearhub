@@ -8,6 +8,7 @@ import {
   FaTruck, FaUndo, FaCheck, FaChevronRight, FaShare 
 } from 'react-icons/fa';
 import './product.css';
+import { useCart } from '../../contexts/CartContext';
 
 export default function ProductDetail({ params }) {
   const [selectedImage, setSelectedImage] = useState(0);
@@ -18,6 +19,14 @@ export default function ProductDetail({ params }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
+  const [addedToCart, setAddedToCart] = useState(false);
+  const { addToCart } = useCart();
+
+  // Helper function to format price
+  const formatPrice = (price) => {
+    const numPrice = parseFloat(price);
+    return !isNaN(numPrice) ? numPrice.toFixed(2) : '0.00';
+  };
 
   // Detect environment and set API URL
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
@@ -25,6 +34,19 @@ export default function ProductDetail({ params }) {
       (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
       ? `http://${window.location.hostname}:8000/api`
       : 'https://fitgearhub-backend.onrender.com/api');
+
+  // Reset added animation after timeout
+  useEffect(() => {
+    let timeout;
+    if (addedToCart) {
+      timeout = setTimeout(() => {
+        setAddedToCart(false);
+      }, 2000);
+    }
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [addedToCart]);
 
   // Handle sticky add to cart bar on mobile
   useEffect(() => {
@@ -88,30 +110,21 @@ export default function ProductDetail({ params }) {
     }
   };
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = () => {
     if (!selectedSize && product.sizes?.length > 0) {
       alert('Please select a size');
       return;
     }
     try {
-      const response = await fetch(`${API_BASE_URL}/cart/add_item/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          product_id: product.id,
-          quantity: quantity,
-          size: selectedSize
-        })
-      });
-
-      if (!response.ok) {
+      const success = addToCart(product, quantity, selectedSize);
+      
+      if (success) {
+        setAddedToCart(true);
+        // No need for alert as we now have visual feedback
+        // alert('Item added to cart successfully!');
+      } else {
         throw new Error('Failed to add to cart');
       }
-      
-      alert('Item added to cart successfully!');
     } catch (error) {
       console.error('Error adding to cart:', error);
       alert('Failed to add item to cart. Please try again later.');
@@ -228,7 +241,7 @@ export default function ProductDetail({ params }) {
               </div>
 
               <div className="pdp-price">
-                ${parseFloat(product.price || 0).toFixed(2)}
+                ${formatPrice(product.price)}
               </div>
             </div>
 
@@ -304,11 +317,19 @@ export default function ProductDetail({ params }) {
             {/* Action Buttons */}
             <div className="pdp-actions">
               <button 
-                className="pdp-add-to-cart" 
+                className={`pdp-add-to-cart ${addedToCart ? 'added' : ''}`}
                 onClick={handleAddToCart}
                 disabled={product.stock <= 0}
               >
-                <FaShoppingCart /> Add to Cart
+                {addedToCart ? (
+                  <>
+                    <FaCheck /> Added to Cart
+                  </>
+                ) : (
+                  <>
+                    <FaShoppingCart /> Add to Cart
+                  </>
+                )}
               </button>
               <button className="pdp-wishlist">
                 <FaHeart />
@@ -416,7 +437,7 @@ export default function ProductDetail({ params }) {
                     <h3>{relatedProduct.name}</h3>
                     <div className="pdp-related-product-meta">
                       <span className="pdp-related-product-price">
-                        ${parseFloat(relatedProduct.price || 0).toFixed(2)}
+                        ${formatPrice(relatedProduct.price)}
                       </span>
                       {relatedProduct.rating && (
                         <div className="pdp-related-product-rating">
@@ -436,14 +457,15 @@ export default function ProductDetail({ params }) {
       <div className={`pdp-sticky-add-to-cart ${isSticky ? 'visible' : ''}`}>
         <div className="pdp-sticky-product-info">
           <span className="pdp-sticky-product-name">{product.name}</span>
-          <span className="pdp-sticky-product-price">${parseFloat(product.price || 0).toFixed(2)}</span>
+          <span className="pdp-sticky-product-price">${formatPrice(product.price)}</span>
         </div>
         <button 
-          className="pdp-sticky-add-to-cart-btn" 
+          className={`pdp-sticky-add-to-cart-btn ${addedToCart ? 'added' : ''}`}
           onClick={handleAddToCart}
           disabled={product.stock <= 0}
         >
-          <FaShoppingCart /> Add to Cart
+          {addedToCart ? <FaCheck /> : <FaShoppingCart />} 
+          {addedToCart ? 'Added' : 'Add to Cart'}
         </button>
       </div>
     </div>

@@ -502,3 +502,131 @@
     background-color: #e9ecef;
     border-color: #ced4da;
 }
+
+/* Add these styles at the appropriate location */
+
+.order-success {
+    max-width: 600px;
+    margin: 80px auto;
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.success-icon {
+    font-size: 60px;
+    height: 100px;
+    width: 100px;
+    line-height: 100px;
+    background: #28a745;
+    color: white;
+    border-radius: 50%;
+    margin: 0 auto 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: successPulse 2s infinite;
+}
+
+@keyframes successPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 15px rgba(40, 167, 69, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+    }
+}
+
+.order-success h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #28a745;
+}
+
+.order-success p {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: #555;
+}
+
+.success-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.continue-shopping-btn,
+.view-orders-btn {
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 30px;
+    border: none;
+}
+
+.continue-shopping-btn {
+    background: #007bff;
+    color: white;
+}
+
+.continue-shopping-btn:hover {
+    background: #0069d9;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+}
+
+.view-orders-btn {
+    background: #f8f9fa;
+    color: #333;
+    border: 1px solid #dee2e6;
+}
+
+.view-orders-btn:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Add these styles at the appropriate location */
+
+.summary-rows {
+    margin-bottom: 20px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    color: #666;
+}
+
+.summary-row:last-child {
+    border-bottom: none;
+}
+
+.product-size {
+    display: block;
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+}
+
+.product-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 6px;
+    object-fit: cover;
+    margin-right: 12px;
+}
+
+/* Make sure these styles complement your existing styles */

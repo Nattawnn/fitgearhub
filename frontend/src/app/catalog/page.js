@@ -4,10 +4,11 @@ import './catalog.css';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { FaHeart, FaShoppingCart } from 'react-icons/fa';
+import { FaHeart, FaShoppingCart, FaCheck } from 'react-icons/fa';
 import CatalogNav from '../components/CatalogNav';
 import SkeletonCatalog from './skeleton/skeletoncatalog';
 import Link from 'next/link';
+import { useCart } from '../contexts/CartContext';
 
 // Detect environment and set API URL
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
@@ -30,9 +31,17 @@ export default function Catalog() {
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
   const [activeImageIndexes, setActiveImageIndexes] = useState({});
+  const [addedProducts, setAddedProducts] = useState({});
   
   const searchParams = useSearchParams();
+  const { addToCart } = useCart();
   
+  // Helper function to format price
+  const formatPrice = (price) => {
+    const numPrice = parseFloat(price);
+    return !isNaN(numPrice) ? numPrice.toFixed(2) : '0.00';
+  };
+
   useEffect(() => {
     // Get filter parameters from URL
     const category = searchParams.get('category');
@@ -47,6 +56,25 @@ export default function Catalog() {
       });
     }
   }, [searchParams]);
+
+  // Reset added animation after timeout
+  useEffect(() => {
+    const timeouts = Object.keys(addedProducts).map(id => {
+      if (addedProducts[id]) {
+        return setTimeout(() => {
+          setAddedProducts(prev => ({
+            ...prev,
+            [id]: false
+          }));
+        }, 2000);
+      }
+      return null;
+    }).filter(Boolean);
+    
+    return () => {
+      timeouts.forEach(timeout => clearTimeout(timeout));
+    };
+  }, [addedProducts]);
 
   // Fetch categories
   useEffect(() => {
@@ -136,27 +164,22 @@ export default function Catalog() {
   }, [activeFilters, searchParams]);
 
   // Function to add item to cart
-  const addToCart = async (productId) => {
+  const handleAddToCart = (product) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/cart/add_item/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          product_id: productId,
-          quantity: 1
-        })
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error response:', errorText);
-        throw new Error('Failed to add item to cart');
-      }
+      const success = addToCart(product, 1);
       
-      alert('Item added to cart successfully!');
+      if (success) {
+        // Set added animation state
+        setAddedProducts(prev => ({
+          ...prev,
+          [product.id]: true
+        }));
+        
+        // No need for alert as we now have visual feedback
+        // alert('Item added to cart successfully!');
+      } else {
+        throw new Error('Failed to add to cart');
+      }
     } catch (error) {
       console.error('Error adding to cart:', error);
       alert('Failed to add item to cart. Please try again later.');
@@ -256,11 +279,14 @@ export default function Catalog() {
                   }}>
                     <FaHeart />
                   </button>
-                  <button className="fitgear-catalog-action-button" onClick={(e) => {
-                    e.preventDefault();
-                    addToCart(product.id);
-                  }}>
-                    <FaShoppingCart />
+                  <button 
+                    className={`fitgear-catalog-action-button ${addedProducts[product.id] ? 'added' : ''}`} 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleAddToCart(product);
+                    }}
+                  >
+                    {addedProducts[product.id] ? <FaCheck /> : <FaShoppingCart />}
                   </button>
                 </div>
               </div>
@@ -282,7 +308,7 @@ export default function Catalog() {
                 </div>
                 
                 <div className="fitgear-catalog-product-footer">
-                  <div className="fitgear-catalog-product-price">${product.price}</div>
+                  <div className="fitgear-catalog-product-price">${formatPrice(product.price)}</div>
                 </div>
               </div>
             </Link>
