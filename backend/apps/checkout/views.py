@@ -64,11 +64,8 @@ class CheckoutViewSet(viewsets.ModelViewSet):
 
             # Create order
             order = Order.objects.create(
-                user=request.user,
-                total_amount=total_amount,
-                shipping_address=checkout.shipping_address,
-                payment_method=checkout.payment_method,
-                status='pending'
+                customer=request.user,
+                total_price=total_amount
             )
 
             # Create order items and clear cart items

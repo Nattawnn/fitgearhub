@@ -3,12 +3,13 @@ from django.contrib.auth.models import User
 from apps.products.models import Product
 
 class Cart(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    cart_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Cart for {self.user.username}"
+        return f"{self.user.username}'s cart"
 
     @property
     def total_price(self):

@@ -40,9 +40,11 @@ class CheckoutAPITest(APITestCase):
             price=500.00,
             description='Test Description'
         )
-        # Create a cart for the user
-        self.cart = Cart.objects.create(user=self.user)
-        # Add an item to the cart
+
+        # Create cart and add items
+        self.cart = Cart.objects.create(
+            user=self.user
+        )
         self.cart_item = CartItem.objects.create(
             cart=self.cart,
             product=self.product,
@@ -58,6 +60,7 @@ class CheckoutAPITest(APITestCase):
             'payment_method': 'credit_card'
         }
         response = self.client.post(url, data, format='json')
+        print('Response content:', response.content)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Checkout.objects.count(), 1)
 
