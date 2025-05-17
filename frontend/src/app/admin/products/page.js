@@ -10,6 +10,7 @@ export default function AdminProducts() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -17,6 +18,9 @@ export default function AdminProducts() {
     stock: '',
     category_id: '',
     image: null
+  });
+  const [categoryFormData, setCategoryFormData] = useState({
+    name: ''
   });
   const [previewUrl, setPreviewUrl] = useState('');
   const [error, setError] = useState('');
@@ -71,6 +75,14 @@ export default function AdminProducts() {
     });
   };
 
+  const handleCategoryChange = (e) => {
+    const { name, value } = e.target;
+    setCategoryFormData({
+      ...categoryFormData,
+      [name]: value
+    });
+  };
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -85,6 +97,41 @@ export default function AdminProducts() {
         setPreviewUrl(reader.result);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const createCategory = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+
+    if (!categoryFormData.name) {
+      setError('Category name is required');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/categories/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(categoryFormData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to create category');
+      }
+
+      const data = await response.json();
+      setSuccess('Category created successfully!');
+      setCategoryFormData({ name: '' });
+      fetchCategories(); // Refresh the categories list
+      setShowCategoryForm(false);
+    } catch (error) {
+      console.error('Error creating category:', error);
+      setError(error.message || 'Error creating category. Please try again.');
     }
   };
 
@@ -114,13 +161,25 @@ export default function AdminProducts() {
         productData.append('image', formData.image);
       }
 
+      console.log('Submitting product with data:', Object.fromEntries(productData));
+
       const response = await fetch(`${API_BASE_URL}/products/`, {
         method: 'POST',
         body: productData,
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        console.error('Error response:', response);
+        const errorText = await response.text();
+        console.error('Error text:', errorText);
+        
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch (e) {
+          throw new Error(`Failed to create product: ${response.status} ${response.statusText}`);
+        }
+        
         throw new Error(errorData.detail || 'Failed to create product');
       }
 
@@ -151,16 +210,74 @@ export default function AdminProducts() {
     <div className="admin-products-page">
       <header className="admin-header">
         <h1>Product Management</h1>
-        <button 
-          className="add-product-btn" 
-          onClick={() => setShowForm(!showForm)}
-        >
-          {showForm ? 'Cancel' : 'Add New Product'}
-        </button>
+        <div className="admin-header-buttons">
+          <button 
+            className="add-category-btn" 
+            onClick={() => {
+              setShowCategoryForm(!showCategoryForm);
+              if (showForm) setShowForm(false);
+            }}
+          >
+            {showCategoryForm ? 'Cancel' : 'Add Category'}
+          </button>
+          <button 
+            className="add-product-btn" 
+            onClick={() => {
+              setShowForm(!showForm);
+              if (showCategoryForm) setShowCategoryForm(false);
+            }}
+          >
+            {showForm ? 'Cancel' : 'Add Product'}
+          </button>
+        </div>
       </header>
 
       {error && <div className="error-message">{error}</div>}
       {success && <div className="success-message">{success}</div>}
+
+      {showCategoryForm && (
+        <div className="product-form-container">
+          <h2>Create New Category</h2>
+          <form onSubmit={createCategory} className="product-form">
+            <div className="form-group">
+              <label htmlFor="category-name">Category Name*</label>
+              <input 
+                type="text" 
+                id="category-name" 
+                name="name" 
+                value={categoryFormData.name}
+                onChange={handleCategoryChange}
+                required
+              />
+            </div>
+            
+            <div className="form-actions">
+              <button type="button" onClick={() => setShowCategoryForm(false)} className="cancel-btn">
+                Cancel
+              </button>
+              <button type="submit" className="submit-btn">
+                Create Category
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Category List */}
+      <div className="categories-list-section">
+        <h2>Current Categories</h2>
+        {categories.length > 0 ? (
+          <div className="categories-chips">
+            {categories.map(category => (
+              <div key={category.id} className="category-chip">
+                {category.name}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="no-categories">No categories found. Please add some categories first.</p>
+        )}
+      </div>
 
       {showForm && (
         <div className="product-form-container">
@@ -234,6 +351,11 @@ export default function AdminProducts() {
                   </option>
                 ))}
               </select>
+              {categories.length === 0 && (
+                <p className="field-hint">
+                  No categories available. Please add a category first.
+                </p>
+              )}
             </div>
 
             <div className="form-group">
