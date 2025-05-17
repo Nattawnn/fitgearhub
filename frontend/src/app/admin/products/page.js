@@ -26,27 +26,38 @@ export default function AdminProducts() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  // API base URL - using environment variable with fallback to development URL
-  // In production on Render, use the proper backend URL
-  const API_BASE_URL = 
-    process.env.NEXT_PUBLIC_API_URL || 
-    (typeof window !== 'undefined' && window.location.hostname.includes('render.com') 
-      ? 'https://fitgearhub-backend.onrender.com/api' 
-      : 'http://localhost:8000/api');
+  // API base URL detection
+  const isProduction = 
+    typeof window !== 'undefined' && 
+    (window.location.hostname.includes('render.com') || 
+     window.location.hostname === 'fitgearhub-frontend.onrender.com');
+  
+  // API base URL with correct paths
+  const API_BASE_URL = isProduction
+    ? 'https://fitgearhub-backend.onrender.com/api'
+    : 'http://localhost:8000/api';
+  
+  // Specific endpoint paths
+  const PRODUCTS_API = `${API_BASE_URL}/products/`;
+  const CATEGORIES_API = `${API_BASE_URL}/categories/`;
 
   useEffect(() => {
+    console.log('Is production environment:', isProduction);
     console.log('Using API URL:', API_BASE_URL);
+    console.log('Products endpoint:', PRODUCTS_API);
+    console.log('Categories endpoint:', CATEGORIES_API);
     fetchProducts();
     fetchCategories();
   }, []);
 
   const fetchProducts = async () => {
     try {
-      console.log('Fetching products from:', `${API_BASE_URL}/products/`);
-      const response = await fetch(`${API_BASE_URL}/products/`, {
+      console.log('Fetching products from:', PRODUCTS_API);
+      const response = await fetch(PRODUCTS_API, {
         headers: {
           'Accept': 'application/json',
         },
+        cache: 'no-store',
       });
       
       if (!response.ok) {
@@ -71,11 +82,12 @@ export default function AdminProducts() {
 
   const fetchCategories = async () => {
     try {
-      console.log('Fetching categories from:', `${API_BASE_URL}/categories/`);
-      const response = await fetch(`${API_BASE_URL}/categories/`, {
+      console.log('Fetching categories from:', CATEGORIES_API);
+      const response = await fetch(CATEGORIES_API, {
         headers: {
           'Accept': 'application/json',
         },
+        cache: 'no-store',
       });
       
       if (!response.ok) {
@@ -142,7 +154,7 @@ export default function AdminProducts() {
 
     try {
       console.log('Creating category with data:', categoryFormData);
-      const response = await fetch(`${API_BASE_URL}/categories/`, {
+      const response = await fetch(CATEGORIES_API, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -206,7 +218,7 @@ export default function AdminProducts() {
 
       console.log('Submitting product with data:', Object.fromEntries(productData));
 
-      const response = await fetch(`${API_BASE_URL}/products/`, {
+      const response = await fetch(PRODUCTS_API, {
         method: 'POST',
         body: productData,
         headers: {
@@ -282,6 +294,15 @@ export default function AdminProducts() {
 
       {error && <div className="error-message">{error}</div>}
       {success && <div className="success-message">{success}</div>}
+
+      {/* Backend connection status */}
+      <div className="api-status">
+        {isProduction ? (
+          <p className="info-message">Using production API at {API_BASE_URL}</p>
+        ) : (
+          <p className="info-message">Using development API at {API_BASE_URL}</p>  
+        )}
+      </div>
 
       {showCategoryForm && (
         <div className="product-form-container">
