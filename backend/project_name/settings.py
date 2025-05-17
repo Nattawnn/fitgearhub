@@ -71,17 +71,19 @@ TEMPLATES = [
 WSGI_APPLICATION = 'project_name.wsgi.application'
 
 # Database configuration
-# Default to SQLite for local development and testing
+# Force using SQLite for now until PostgreSQL issues are resolved
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': os.path.join(os.environ.get('RENDER_MOUNT_PATH', BASE_DIR), 'db.sqlite3'),
         'TEST': {
-            'NAME': BASE_DIR / 'test_db.sqlite3',
+            'NAME': os.path.join(os.environ.get('RENDER_MOUNT_PATH', BASE_DIR), 'test_db.sqlite3'),
         },
     }
 }
 
+# Temporarily comment out PostgreSQL configuration
+"""
 # If DATABASE_URL is in environment, use that (for Render deployment)
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
@@ -105,19 +107,20 @@ if DATABASE_URL:
                 # Keep using the default SQLite database if connection fails
                 DATABASES['default'] = {
                     'ENGINE': 'django.db.backends.sqlite3',
-                    'NAME': BASE_DIR / 'db.sqlite3',
+                    'NAME': os.path.join(os.environ.get('RENDER_MOUNT_PATH', BASE_DIR), 'db.sqlite3'),
                 }
     except Exception as e:
         print(f"Error setting up database: {e}")
         print("Falling back to SQLite database")
         # Keep using the default SQLite database
         pass
+"""
 
 # Use SQLite for testing
 if 'test' in sys.argv or os.environ.get('CI') == 'true':
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db_test.sqlite3',
+        'NAME': os.path.join(os.environ.get('RENDER_MOUNT_PATH', BASE_DIR), 'test_db.sqlite3'),
     }
     print("Using SQLite for testing")
 
