@@ -40,6 +40,7 @@ class CheckoutAPITest(APITestCase):
             price=500.00,
             description='Test Description'
         )
+
         # Create cart and add items
         self.cart = Cart.objects.create(
             user=self.user
