@@ -4,6 +4,7 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from .models import Checkout, CheckoutItem
 from apps.products.models import Product
+from apps.cart.models import Cart, CartItem
 
 User = get_user_model()
 
@@ -39,10 +40,20 @@ class CheckoutAPITest(APITestCase):
             price=500.00,
             description='Test Description'
         )
+        # Create a cart for the user
+        self.cart = Cart.objects.create(user=self.user)
+        # Add an item to the cart
+        self.cart_item = CartItem.objects.create(
+            cart=self.cart,
+            product=self.product,
+            quantity=2
+        )
 
     def test_create_checkout(self):
         url = '/api/checkout/'
         data = {
+            'full_name': 'Test User',
+            'phone_number': '1234567890',
             'shipping_address': '123 Test St',
             'payment_method': 'credit_card'
         }
