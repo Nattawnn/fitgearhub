@@ -29,6 +29,7 @@ export default function Catalog() {
   const [isLoading, setIsLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
+  const [activeImageIndexes, setActiveImageIndexes] = useState({});
   
   const searchParams = useSearchParams();
   
@@ -170,6 +171,22 @@ export default function Catalog() {
     return 'Premium Fitness Gear';
   };
 
+  // Add this function to handle image hover
+  const handleImageHover = (productId, imageIndex) => {
+    setActiveImageIndexes(prev => ({
+      ...prev,
+      [productId]: imageIndex
+    }));
+  };
+
+  // Add this function to handle mouse leave
+  const handleImageLeave = (productId) => {
+    setActiveImageIndexes(prev => ({
+      ...prev,
+      [productId]: 0
+    }));
+  };
+
   if (isLoading) {
     return <SkeletonCatalog />;
   }
@@ -203,13 +220,29 @@ export default function Catalog() {
         <div className="fitgear-catalog-products-grid">
           {filteredProducts.map(product => (
             <Link href={`/products/${product.id}`} key={product.id} className="fitgear-catalog-product-card">
-              <div className="fitgear-catalog-product-image-container">
+              <div className="fitgear-catalog-product-image-container"
+                   onMouseLeave={() => handleImageLeave(product.id)}>
                 {product.images && product.images.length > 0 ? (
-                  <img 
-                    src={product.images[0].image}
-                    alt={product.name} 
-                    className="fitgear-catalog-product-image"
-                  />
+                  <>
+                    <img 
+                      src={product.images[activeImageIndexes[product.id] || 0].image}
+                      alt={product.name} 
+                      className="fitgear-catalog-product-image"
+                    />
+                    {product.images.length > 1 && (
+                      <div className="fitgear-catalog-product-thumbnails">
+                        {product.images.slice(1, 4).map((img, index) => (
+                          <img
+                            key={index}
+                            src={img.image}
+                            alt={`${product.name} thumbnail ${index + 2}`}
+                            className="fitgear-catalog-thumbnail"
+                            onMouseEnter={() => handleImageHover(product.id, index + 1)}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <div className="fitgear-catalog-product-image-placeholder">
                     No Image Available
