@@ -1,9 +1,10 @@
 'use client';
 
 import React, { forwardRef } from 'react';
-import { FaUser, FaUserCircle, FaHistory, FaCog, FaSignOutAlt, FaHeart } from 'react-icons/fa';
+import { FaUser, FaUserCircle, FaHistory, FaSignOutAlt } from 'react-icons/fa';
 import Link from 'next/link';
 import './ProfileHeader.css';
+import { useRouter } from 'next/navigation';
 
 const ProfileHeader = forwardRef(({ profileOpen, setProfileOpen, setCartOpen }, ref) => {
   // Sample user data
@@ -14,6 +15,8 @@ const ProfileHeader = forwardRef(({ profileOpen, setProfileOpen, setCartOpen }, 
     isLoggedIn: true
   };
 
+  const router = useRouter();
+
   const toggleProfile = () => {
     setProfileOpen(!profileOpen);
     if (setCartOpen) setCartOpen(false);
@@ -21,7 +24,8 @@ const ProfileHeader = forwardRef(({ profileOpen, setProfileOpen, setCartOpen }, 
 
   const handleSignOut = () => {
     console.log('User signed out');
-    // In a real app, this would handle the sign out process
+    // Redirect to homepage
+    router.push('/');
   };
 
   return (
@@ -45,21 +49,9 @@ const ProfileHeader = forwardRef(({ profileOpen, setProfileOpen, setCartOpen }, 
                 </div>
               </div>
               <div className="profile-menu">
-                <Link href="/profile" className="profile-menu-item">
-                  <FaUserCircle />
-                  <span>My Profile</span>
-                </Link>
                 <Link href="/orders" className="profile-menu-item">
                   <FaHistory />
                   <span>Order History</span>
-                </Link>
-                <Link href="/wishlist" className="profile-menu-item">
-                  <FaHeart />
-                  <span>Wishlist</span>
-                </Link>
-                <Link href="/settings" className="profile-menu-item">
-                  <FaCog />
-                  <span>Settings</span>
                 </Link>
                 <button className="sign-out-button" onClick={handleSignOut}>
                   <FaSignOutAlt />

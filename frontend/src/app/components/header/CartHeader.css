@@ -198,10 +198,12 @@
 }
 
 .cart-item-price {
-  font-size: 14px;
-  font-weight: 600;
   color: #007bff;
-  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
 }
 
 .cart-item-actions {

@@ -626,7 +626,7 @@
 .pdp-related-product-image img {
   width: 100% !important;
   height: 100% !important;
-  object-fit: contain !important;
+  object-fit: cover !important;
 }
 
 .pdp-related-product-info {

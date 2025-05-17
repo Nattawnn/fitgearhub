@@ -428,6 +428,7 @@ export default function ProductDetail({ params }) {
                         alt={relatedProduct.name}
                         width={200}
                         height={200}
+                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
                       />
                     ) : (
                       <div className="pdp-no-image">No Image Available</div>

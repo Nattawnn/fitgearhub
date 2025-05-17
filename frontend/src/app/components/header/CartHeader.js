@@ -17,7 +17,7 @@ const CartHeader = forwardRef(({ setCartOpen, setProfileOpen }, ref) => {
     toggleCart,
     removeFromCart, 
     updateQuantity, 
-    calculateTotal 
+    calculateSubtotal 
   } = useCart();
 
   // Sync the external cartOpen state with our context state
@@ -103,8 +103,8 @@ const CartHeader = forwardRef(({ setCartOpen, setProfileOpen }, ref) => {
 
               <div className="cart-footer">
                 <div className="cart-total">
-                  <span>Total:</span>
-                  <span>${formatPrice(calculateTotal())}</span>
+                  <span>Subtotal:</span>
+                  <span>${formatPrice(calculateSubtotal())}</span>
                 </div>
                 <button className="view-cart-btn" onClick={handleViewCart}>View Cart</button>
                 <button className="checkout-btn" onClick={handleCheckout}>Checkout</button>
