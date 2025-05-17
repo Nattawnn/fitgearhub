@@ -27,5 +27,4 @@ services:
 
 databases:
   - name: fitgearhub-db
-    databaseName: fitgearhub
-    user: postgres 
+    databaseName: fitgearhub 
