@@ -68,29 +68,39 @@ TEMPLATES = [
 WSGI_APPLICATION = 'project_name.wsgi.application'
 
 # Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-# If DATABASE_URL is in environment, use that instead (for Render deployment)
+# If DATABASE_URL is in environment, use that first
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
-    DATABASES['default'] = dj_database_url.parse(DATABASE_URL)
-
-# Uncomment to use PostgreSQL locally instead of SQLite
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.environ.get('DB_NAME', 'fitgearhub'),
-#         'USER': os.environ.get('DB_USER', 'wave'),
-#         'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-#         'HOST': os.environ.get('DB_HOST', 'localhost'),
-#         'PORT': os.environ.get('DB_PORT', '5432'),
-#     }
-# }
+    # Try to use the DATABASE_URL if provided
+    try:
+        DATABASES = {
+            'default': dj_database_url.parse(DATABASE_URL)
+        }
+    except Exception as e:
+        print(f"Error parsing DATABASE_URL: {e}")
+        # Fallback to direct configuration if DATABASE_URL fails
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': os.environ.get('DB_NAME', 'fitgearhub'),
+                'USER': os.environ.get('DB_USER', 'nattaw'),  # ใช้ชื่อผู้ใช้ที่ถูกต้องจาก Render
+                'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+                'HOST': os.environ.get('DB_HOST', 'localhost'),
+                'PORT': os.environ.get('DB_PORT', '5432'),
+            }
+        }
+else:
+    # Default database configuration
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('DB_NAME', 'fitgearhub'),
+            'USER': os.environ.get('DB_USER', 'wave'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+            'HOST': os.environ.get('DB_HOST', 'localhost'),
+            'PORT': os.environ.get('DB_PORT', '5432'),
+        }
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
