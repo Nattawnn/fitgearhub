@@ -39,7 +39,13 @@ def create_superuser(request):
     except Exception as e:
         return JsonResponse({'message': f'Error: {str(e)}'})
 
+# API status check endpoint
+def api_status(request):
+    return JsonResponse({'status': 'API is running', 'message': 'Welcome to FitGearHub API'})
+
 urlpatterns = [
+    # API status check endpoint
+    path('', api_status, name='api-status'),
     path('', include('apps.products.urls')),
     path('', include('apps.cart.urls')),
     path('', include('apps.checkout.urls')),
