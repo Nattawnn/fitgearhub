@@ -2,6 +2,7 @@ import os
 import dj_database_url
 from pathlib import Path
 from dotenv import load_dotenv
+import sys
 
 # Load environment variables from .env file
 load_dotenv()
@@ -67,40 +68,43 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'project_name.wsgi.application'
 
-# Database
-# If DATABASE_URL is in environment, use that first
+# Database configuration
+# Default to SQLite for local development and testing
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+# If DATABASE_URL is in environment, use that (for Render deployment)
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
     # Try to use the DATABASE_URL if provided
     try:
-        DATABASES = {
-            'default': dj_database_url.parse(DATABASE_URL)
-        }
+        DATABASES['default'] = dj_database_url.parse(DATABASE_URL)
+        print(f"Using database configuration from DATABASE_URL")
     except Exception as e:
         print(f"Error parsing DATABASE_URL: {e}")
-        # Fallback to direct configuration if DATABASE_URL fails
-        DATABASES = {
-            'default': {
+        # Use explicit environment variables if available
+        if all([os.environ.get(var) for var in ['DB_NAME', 'DB_USER', 'DB_PASSWORD', 'DB_HOST']]):
+            DATABASES['default'] = {
                 'ENGINE': 'django.db.backends.postgresql',
-                'NAME': os.environ.get('DB_NAME', 'fitgearhub'),
-                'USER': os.environ.get('DB_USER', 'nattaw'),  # ใช้ชื่อผู้ใช้ที่ถูกต้องจาก Render
-                'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-                'HOST': os.environ.get('DB_HOST', 'localhost'),
+                'NAME': os.environ.get('DB_NAME'),
+                'USER': os.environ.get('DB_USER'),
+                'PASSWORD': os.environ.get('DB_PASSWORD'),
+                'HOST': os.environ.get('DB_HOST'),
                 'PORT': os.environ.get('DB_PORT', '5432'),
             }
-        }
-else:
-    # Default database configuration
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('DB_NAME', 'fitgearhub'),
-            'USER': os.environ.get('DB_USER', 'wave'),
-            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-            'HOST': os.environ.get('DB_HOST', 'localhost'),
-            'PORT': os.environ.get('DB_PORT', '5432'),
-        }
+            print(f"Using explicit database configuration from environment variables")
+
+# Use SQLite for testing
+if 'test' in sys.argv or os.environ.get('CI') == 'true':
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db_test.sqlite3',
     }
+    print("Using SQLite for testing")
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
