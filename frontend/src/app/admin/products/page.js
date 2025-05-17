@@ -34,12 +34,12 @@ export default function AdminProducts() {
   
   // API base URL with correct paths
   const API_BASE_URL = isProduction
-    ? 'https://fitgearhub-backend.onrender.com/api'
-    : 'http://localhost:8000/api';
+    ? 'https://fitgearhub-backend.onrender.com'
+    : 'http://localhost:8000';
   
   // Specific endpoint paths
-  const PRODUCTS_API = `${API_BASE_URL}/products/`;
-  const CATEGORIES_API = `${API_BASE_URL}/categories/`;
+  const PRODUCTS_API = `${API_BASE_URL}/api/products/`;
+  const CATEGORIES_API = `${API_BASE_URL}/api/categories/`;
 
   useEffect(() => {
     console.log('Is production environment:', isProduction);
