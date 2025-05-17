@@ -79,7 +79,6 @@ DATABASES = {
         'TEST': {
             'NAME': BASE_DIR / 'test_db.sqlite3',
         },
-
     }
 }
 
@@ -90,19 +89,15 @@ if DATABASE_URL:
     try:
         DATABASES['default'] = dj_database_url.parse(DATABASE_URL)
         print(f"Using database configuration from DATABASE_URL")
+        # Test the connection to confirm it works
+        from django.db import connections
+        connections['default'].ensure_connection()
+        print("Database connection test successful")
     except Exception as e:
-        print(f"Error parsing DATABASE_URL: {e}")
-        # Use explicit environment variables if available
-        if all([os.environ.get(var) for var in ['DB_NAME', 'DB_USER', 'DB_PASSWORD', 'DB_HOST']]):
-            DATABASES['default'] = {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': os.environ.get('DB_NAME'),
-                'USER': os.environ.get('DB_USER'),
-                'PASSWORD': os.environ.get('DB_PASSWORD'),
-                'HOST': os.environ.get('DB_HOST'),
-                'PORT': os.environ.get('DB_PORT', '5432'),
-            }
-            print(f"Using explicit database configuration from environment variables")
+        print(f"Error connecting to database: {e}")
+        print("Falling back to SQLite database")
+        # Keep using the default SQLite database if connection fails
+        pass
 
 # Use SQLite for testing
 if 'test' in sys.argv or os.environ.get('CI') == 'true':
