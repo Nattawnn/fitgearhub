@@ -157,13 +157,41 @@ REST_FRAMEWORK = {
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True  # Only for development
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'https://fitgearhub-frontend.onrender.com',
+]
+
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 
 # CSRF settings
 CSRF_TRUSTED_ORIGINS = [
     'https://fitgearhub-backend.onrender.com',
     'https://fitgearhub-frontend.onrender.com',
     'http://localhost:3000',
+    'http://127.0.0.1:3000',
     'http://localhost:8000',
+    'http://127.0.0.1:8000',
 ]
 
 # Define paths that should be exempt from CSRF

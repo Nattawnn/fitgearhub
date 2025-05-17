@@ -9,7 +9,14 @@ import CatalogNav from '../components/CatalogNav';
 import SkeletonCatalog from './skeleton/skeletoncatalog';
 import Link from 'next/link';
 
-const API_BASE_URL = 'http://127.0.0.1:8000/api';
+// Detect environment and set API URL
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
+  (typeof window !== 'undefined' && 
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? `http://${window.location.hostname}:8000/api`
+    : 'https://fitgearhub-backend.onrender.com/api');
+
+console.log('Using API URL:', API_BASE_URL); // Add this for debugging
 
 export default function Catalog() {
   const [products, setProducts] = useState([]);
@@ -22,6 +29,7 @@ export default function Catalog() {
   const [isLoading, setIsLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState(null);
+  const [activeImageIndexes, setActiveImageIndexes] = useState({});
   
   const searchParams = useSearchParams();
   
@@ -44,16 +52,28 @@ export default function Catalog() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/categories/`);
+        console.log('Fetching categories from:', `${API_BASE_URL}/categories/`);
+        const response = await fetch(`${API_BASE_URL}/categories/`, {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+        });
+
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          const errorText = await response.text();
+          console.error('Error response:', errorText);
+          throw new Error(`Failed to fetch categories: ${response.status}`);
         }
+
         const data = await response.json();
-        console.log('Categories:', data);
-        setCategories(data);
+        console.log('Categories data:', data);
+        setCategories(Array.isArray(data) ? data : []);
+        setError(null);
       } catch (error) {
         console.error('Error fetching categories:', error);
-        setError('Failed to load categories');
+        setError('Failed to load categories. Please try again later.');
+        setCategories([]);
       }
     };
 
@@ -76,25 +96,37 @@ export default function Catalog() {
           params.append('search', searchParams.get('search'));
         }
         
-        // Add ordering
-        params.append('ordering', '-created_at'); // Default to newest first
+        params.append('ordering', '-created_at');
         
         const finalUrl = `${url}${params.toString() ? `?${params.toString()}` : ''}`;
         console.log('Fetching products from:', finalUrl);
         
-        const response = await fetch(finalUrl);
+        const response = await fetch(finalUrl, {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+        });
+
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          const errorText = await response.text();
+          console.error('Error response:', errorText);
+          throw new Error(`Failed to fetch products: ${response.status}`);
         }
         
         const data = await response.json();
-        console.log('Products:', data);
-        setProducts(data);
-        setFilteredProducts(data);
+        console.log('Products data:', data);
+        
+        // Handle both array and paginated responses
+        const productsList = Array.isArray(data) ? data : (data.results || []);
+        setProducts(productsList);
+        setFilteredProducts(productsList);
         setError(null);
       } catch (error) {
         console.error('Error fetching products:', error);
-        setError('Failed to load products');
+        setError('Failed to load products. Please try again later.');
+        setProducts([]);
+        setFilteredProducts([]);
       } finally {
         setIsLoading(false);
       }
@@ -110,8 +142,7 @@ export default function Catalog() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // Add your authentication token here if required
-          // 'Authorization': `Bearer ${token}`
+          'Accept': 'application/json',
         },
         body: JSON.stringify({
           product_id: productId,
@@ -119,28 +150,41 @@ export default function Catalog() {
         })
       });
 
-      if (!response.ok) throw new Error('Failed to add item to cart');
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error('Failed to add item to cart');
+      }
       
-      // Show success message or update cart count
       alert('Item added to cart successfully!');
     } catch (error) {
       console.error('Error adding to cart:', error);
-      alert('Failed to add item to cart');
+      alert('Failed to add item to cart. Please try again later.');
     }
   };
 
   // Get filter text for display
   const getFilterText = () => {
-    if (activeFilters.item) {
-      return `${activeFilters.item}`;
-    }
-    if (activeFilters.subcategory) {
-      return `${activeFilters.subcategory}`;
-    }
-    if (activeFilters.category) {
-      return `${activeFilters.category}`;
-    }
+    if (activeFilters.item) return activeFilters.item;
+    if (activeFilters.subcategory) return activeFilters.subcategory;
+    if (activeFilters.category) return activeFilters.category;
     return 'Premium Fitness Gear';
+  };
+
+  // Add this function to handle image hover
+  const handleImageHover = (productId, imageIndex) => {
+    setActiveImageIndexes(prev => ({
+      ...prev,
+      [productId]: imageIndex
+    }));
+  };
+
+  // Add this function to handle mouse leave
+  const handleImageLeave = (productId) => {
+    setActiveImageIndexes(prev => ({
+      ...prev,
+      [productId]: 0
+    }));
   };
 
   if (isLoading) {
@@ -176,13 +220,29 @@ export default function Catalog() {
         <div className="fitgear-catalog-products-grid">
           {filteredProducts.map(product => (
             <Link href={`/products/${product.id}`} key={product.id} className="fitgear-catalog-product-card">
-              <div className="fitgear-catalog-product-image-container">
-                {product.image ? (
-                  <img 
-                    src={product.image}
-                    alt={product.name} 
-                    className="fitgear-catalog-product-image"
-                  />
+              <div className="fitgear-catalog-product-image-container"
+                   onMouseLeave={() => handleImageLeave(product.id)}>
+                {product.images && product.images.length > 0 ? (
+                  <>
+                    <img 
+                      src={product.images[activeImageIndexes[product.id] || 0].image}
+                      alt={product.name} 
+                      className="fitgear-catalog-product-image"
+                    />
+                    {product.images.length > 1 && (
+                      <div className="fitgear-catalog-product-thumbnails">
+                        {product.images.slice(1, 4).map((img, index) => (
+                          <img
+                            key={index}
+                            src={img.image}
+                            alt={`${product.name} thumbnail ${index + 2}`}
+                            className="fitgear-catalog-thumbnail"
+                            onMouseEnter={() => handleImageHover(product.id, index + 1)}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <div className="fitgear-catalog-product-image-placeholder">
                     No Image Available
