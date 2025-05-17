@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_yasg',
     'django_filters',
-    'django_bootstrap5',
     'apps.core',
     'apps.products',
     'apps.users',
@@ -45,6 +44,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'project_name.middleware.CSRFExemptMiddleware',  # Custom CSRF exemption middleware
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -162,13 +162,35 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
 ]
 
-# Session settings
-SESSION_COOKIE_SECURE = True
-SESSION_COOKIE_SAMESITE = 'None'  # Required for cross-domain cookies
-CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = 'None'
+# Define paths that should be exempt from CSRF
+CSRF_EXEMPT_URLS = [
+    r'^api/.*$',  # Exempt all API endpoints
+    r'^admin/login/.*$',  # Exempt admin login
+]
 
-# If running in production (on Render)
-if not DEBUG:
+# Session settings - Only set secure cookies in production
+if DEBUG:
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    CSRF_COOKIE_SAMESITE = 'Lax'
+else:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SAMESITE = 'None'  # Required for cross-domain cookies
+    CSRF_COOKIE_SAMESITE = 'None'
+    
+    # HTTPS settings
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
+
+# Disable CSRF for API endpoints in development (unsafe for production)
+if DEBUG:
+    # Optional: Create a list of URLs that should be exempt from CSRF
+    CSRF_EXEMPT_URLS = [r'^api/.*$']
+    
+    # Import and use CSRF exempt middleware if in development
+    MIDDLEWARE = [
+        middleware for middleware in MIDDLEWARE 
+        if middleware != 'django.middleware.csrf.CsrfViewMiddleware'
+    ] + ['django.middleware.csrf.CsrfViewMiddleware']
