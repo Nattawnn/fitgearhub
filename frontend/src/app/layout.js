@@ -1,7 +1,7 @@
 import { Montserrat, Inter } from 'next/font/google'
 import './globals.css'
-import Header from './components/header'
-import Footer from './components/footer'
+import LayoutContent from './components/LayoutContent'
+import { metadata } from './metadata'
 
 const montserrat = Montserrat({ 
   subsets: ['latin'],
@@ -13,18 +13,15 @@ const inter = Inter({
   variable: '--font-inter',
 })
 
-export const metadata = {
-  title: 'FitGearHub - Your Fitness Equipment Store',
-  description: 'Find the best fitness equipment for your workout needs',
-};
+export { metadata }
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${montserrat.variable} ${inter.variable}`}>
-        <Header />
-        {children}
-        <Footer />
+        <LayoutContent>
+          {children}
+        </LayoutContent>
       </body>
     </html>
   );
