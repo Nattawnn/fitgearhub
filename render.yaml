@@ -22,6 +22,10 @@ services:
         value: project_name.settings
       - key: DEBUG
         value: "0"
+    disk:
+      name: sqlite-data
+      mountPath: /opt/render/project/src/backend/db
+      sizeGB: 1
       # Temporarily comment out DATABASE_URL to use SQLite instead
       # - key: DATABASE_URL
       #   fromDatabase:
