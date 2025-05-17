@@ -137,13 +137,6 @@ export default function Checkout() {
                             <FaTruck className="payment-icon" />
                             <span>ปลายทาง</span>
                         </button>
-                        <button 
-                            className={`payment-option ${selectedPayment === 'cod2' ? 'selected' : ''}`}
-                            onClick={() => handlePaymentSelect('cod2')}
-                        >
-                            <FaTruck className="payment-icon" />
-                            <span>ปลายทาง</span>
-                        </button>
                     </div>
 
                     {/* Card Payment Form */}
