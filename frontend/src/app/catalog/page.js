@@ -17,7 +17,8 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ||
     ? `http://${window.location.hostname}:8000/api`
     : 'https://fitgearhub-backend.onrender.com/api');
 
-console.log('Using API URL:', API_BASE_URL); // Add this for debugging
+// Add debugging for API URL
+console.log('Using API URL:', API_BASE_URL);
 
 export default function Catalog() {
   const [products, setProducts] = useState([]);
@@ -76,12 +77,14 @@ export default function Catalog() {
     };
   }, [addedProducts]);
 
-  // Fetch categories
+  // Fetch categories with better error handling
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        console.log('Fetching categories from:', `${API_BASE_URL}/categories/`);
-        const response = await fetch(`${API_BASE_URL}/categories/`, {
+        const fullUrl = `${API_BASE_URL}/categories/`;
+        console.log('Fetching categories from:', fullUrl);
+        
+        const response = await fetch(fullUrl, {
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -100,8 +103,32 @@ export default function Catalog() {
         setError(null);
       } catch (error) {
         console.error('Error fetching categories:', error);
-        setError('Failed to load categories. Please try again later.');
-        setCategories([]);
+        // Try alternative API URL if the main one fails
+        try {
+          console.log('Trying alternative URL...');
+          const altUrl = 'https://fitgearhub-backend.onrender.com/api/categories/';
+          console.log('Alt URL:', altUrl);
+          
+          const altResponse = await fetch(altUrl, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          });
+          
+          if (!altResponse.ok) {
+            throw new Error(`Alternative URL failed: ${altResponse.status}`);
+          }
+          
+          const altData = await altResponse.json();
+          console.log('Alt categories data:', altData);
+          setCategories(Array.isArray(altData) ? altData : []);
+          setError(null);
+        } catch (altError) {
+          console.error('Alternative URL also failed:', altError);
+          setError('Failed to load categories. Please try again later.');
+          setCategories([]);
+        }
       }
     };
 
@@ -152,9 +179,49 @@ export default function Catalog() {
         setError(null);
       } catch (error) {
         console.error('Error fetching products:', error);
-        setError('Failed to load products. Please try again later.');
-        setProducts([]);
-        setFilteredProducts([]);
+        // Try alternative API URL if the main one fails
+        try {
+          console.log('Trying alternative products URL...');
+          let altUrl = 'https://fitgearhub-backend.onrender.com/api/products/';
+          const params = new URLSearchParams();
+          
+          if (activeFilters.category) {
+            params.append('category', activeFilters.category);
+          }
+          
+          if (searchParams.get('search')) {
+            params.append('search', searchParams.get('search'));
+          }
+          
+          params.append('ordering', '-created_at');
+          
+          const altFinalUrl = `${altUrl}${params.toString() ? `?${params.toString()}` : ''}`;
+          console.log('Alt products URL:', altFinalUrl);
+          
+          const altResponse = await fetch(altFinalUrl, {
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          });
+          
+          if (!altResponse.ok) {
+            throw new Error(`Alternative products URL failed: ${altResponse.status}`);
+          }
+          
+          const altData = await altResponse.json();
+          const altProductsList = Array.isArray(altData) ? altData : (altData.results || []);
+          setProducts(altProductsList);
+          setFilteredProducts(altProductsList);
+          setError(null);
+        } catch (altError) {
+          console.error('Alternative products URL also failed:', altError);
+          setError('Failed to load products. Please try again later.');
+          setProducts([]);
+          setFilteredProducts([]);
+        } finally {
+          setIsLoading(false);
+        }
       } finally {
         setIsLoading(false);
       }
