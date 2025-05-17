@@ -8,12 +8,45 @@ import {
   FaTruck, FaUndo, FaCheck, FaChevronRight, FaShare 
 } from 'react-icons/fa';
 import './product.css';
+import { useCart } from '../../contexts/CartContext';
 
 export default function ProductDetail({ params }) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [isSticky, setIsSticky] = useState(false);
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [addedToCart, setAddedToCart] = useState(false);
+  const { addToCart } = useCart();
+
+  // Helper function to format price
+  const formatPrice = (price) => {
+    const numPrice = parseFloat(price);
+    return !isNaN(numPrice) ? numPrice.toFixed(2) : '0.00';
+  };
+
+  // Detect environment and set API URL
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
+    (typeof window !== 'undefined' && 
+      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+      ? `http://${window.location.hostname}:8000/api`
+      : 'https://fitgearhub-backend.onrender.com/api');
+
+  // Reset added animation after timeout
+  useEffect(() => {
+    let timeout;
+    if (addedToCart) {
+      timeout = setTimeout(() => {
+        setAddedToCart(false);
+      }, 2000);
+    }
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [addedToCart]);
 
   // Handle sticky add to cart bar on mobile
   useEffect(() => {
@@ -26,6 +59,49 @@ export default function ProductDetail({ params }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Fetch product data
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`${API_BASE_URL}/products/${params.id}/`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch product');
+        }
+        const data = await response.json();
+        setProduct(data);
+        
+        // Fetch related products from same category
+        if (data.category) {
+          const relatedResponse = await fetch(`${API_BASE_URL}/products/?category=${data.category.id}&exclude=${params.id}`);
+          if (relatedResponse.ok) {
+            const relatedData = await relatedResponse.json();
+            // Check if the response has results property (paginated response)
+            const relatedProducts = relatedData.results || relatedData;
+            // Ensure we're working with an array
+            if (Array.isArray(relatedProducts)) {
+              setRelatedProducts(relatedProducts.slice(0, 3)); // Get first 3 related products
+            } else {
+              console.log('Related products response is not an array:', relatedProducts);
+              setRelatedProducts([]);
+            }
+          }
+        }
+        
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching product:', err);
+        setError('Failed to load product. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (params.id) {
+      fetchProduct();
+    }
+  }, [params.id]);
+
   // Handle quantity changes with validation
   const handleQuantityChange = (e) => {
     const value = parseInt(e.target.value);
@@ -34,99 +110,48 @@ export default function ProductDetail({ params }) {
     }
   };
 
-  // Mock product data - in a real app this would come from an API
-  const product = {
-    id: params.id,
-    name: "Premium Performance Boxing Gloves",
-    price: 179.99,
-    rating: 4.8,
-    reviews: 156,
-    reviewsData: [
-      { id: 1, user: "John D.", rating: 5, comment: "Excellent quality and durability. Perfect for professional training.", date: "2024-02-15" },
-      { id: 2, user: "Sarah M.", rating: 4, comment: "Great gloves, very comfortable. Sizing runs slightly large.", date: "2024-02-10" },
-      { id: 3, user: "Mike R.", rating: 5, comment: "Best gloves I've ever used. Worth every penny.", date: "2024-02-05" }
-    ],
-    description: "Professional-grade boxing gloves engineered for elite performance. Features premium leather construction, advanced impact absorption, and ergonomic wrist support for optimal protection.",
-    images: [
-      "https://res.cloudinary.com/dstl8qazf/image/upload/v1746800160/b2zemgektesep1nqfirh.png",
-      "https://res.cloudinary.com/dstl8qazf/image/upload/v1746800238/vhorpxgcge2ommmcy3pl.png",
-      "https://res.cloudinary.com/dstl8qazf/image/upload/v1746800242/ucobyaucgrxgvyksfm5a.png"
-    ],
-    sizes: ["8oz", "10oz", "12oz", "14oz", "16oz"],
-    colors: ["#d32f2f", "#000000", "#2e7d32"],
-    features: [
-      "Premium genuine leather construction",
-      "Multi-layered foam padding system",
-      "Moisture-wicking antimicrobial lining",
-      "Anatomical thumb position",
-      "Professional-grade wrist support"
-    ],
-    specs: [
-      { label: "Material", value: "Premium Leather" },
-      { label: "Padding", value: "Multi-Layer Foam" },
-      { label: "Closure", value: "Hook & Loop" },
-      { label: "Usage", value: "Training/Competition" },
-      { label: "Weight", value: "16 oz (454g)" },
-      { label: "Inner Material", value: "Antimicrobial Lining" },
-      { label: "Warranty", value: "2 Years" },
-      { label: "Origin", value: "Handcrafted in Pakistan" }
-    ],
-    stock: 15,
-    category: "Combat Sports",
-    subcategory: "Boxing"
-  };
-
-  // Mock related products
-  const relatedProducts = [
-    {
-      id: 1,
-      name: "Pro Hand Wraps",
-      price: 12.99,
-      image: "https://res.cloudinary.com/dstl8qazf/image/upload/v1746800160/b2zemgektesep1nqfirh.png",
-      rating: 4.5
-    },
-    {
-      id: 2,
-      name: "Boxing Headgear",
-      price: 89.99,
-      image: "https://res.cloudinary.com/dstl8qazf/image/upload/v1746800238/vhorpxgcge2ommmcy3pl.png",
-      rating: 4.7
-    },
-    {
-      id: 3,
-      name: "Premium Mouthguard",
-      price: 29.99,
-      image: "https://res.cloudinary.com/dstl8qazf/image/upload/v1746800242/ucobyaucgrxgvyksfm5a.png",
-      rating: 4.6
-    }
-  ];
-
-  const renderStars = (rating) => {
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      if (i <= Math.floor(rating)) {
-        stars.push(<FaStar key={i} className="star" />);
-      } else if (i === Math.ceil(rating) && !Number.isInteger(rating)) {
-        stars.push(<FaStar key={i} className="star" style={{ opacity: '0.5' }} />);
-      } else {
-        stars.push(<FaRegStar key={i} className="star" />);
-      }
-    }
-    return stars;
-  };
-
   const handleAddToCart = () => {
-    if (!selectedSize) {
+    if (!selectedSize && product.sizes?.length > 0) {
       alert('Please select a size');
       return;
     }
-    // Add to cart logic here
-    console.log('Added to cart:', {
-      productId: product.id,
-      size: selectedSize,
-      quantity: quantity
-    });
+    try {
+      const success = addToCart(product, quantity, selectedSize);
+      
+      if (success) {
+        setAddedToCart(true);
+        // No need for alert as we now have visual feedback
+        // alert('Item added to cart successfully!');
+      } else {
+        throw new Error('Failed to add to cart');
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      alert('Failed to add item to cart. Please try again later.');
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="pdp-page">
+        <div className="pdp-layout-container">
+          <div className="pdp-loading">Loading...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <div className="pdp-page">
+        <div className="pdp-layout-container">
+          <div className="pdp-error">
+            {error || 'Product not found'}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="pdp-page">
@@ -138,8 +163,12 @@ export default function ProductDetail({ params }) {
             <FaChevronRight />
             <Link href="/catalog">Shop</Link>
             <FaChevronRight />
-            <Link href={`/catalog?category=${product.category.toLowerCase()}`}>{product.category}</Link>
-            <FaChevronRight />
+            {product.category && (
+              <>
+                <Link href={`/catalog?category=${product.category.id}`}>{product.category.name}</Link>
+                <FaChevronRight />
+              </>
+            )}
             <span>{product.name}</span>
           </nav>
         </div>
@@ -151,46 +180,60 @@ export default function ProductDetail({ params }) {
           <div className="pdp-gallery">
             <div className="pdp-main-image">
               <div className="pdp-image-zoom-container">
-                <Image
-                  src={product.images[selectedImage]}
-                  alt={product.name}
-                  width={600}
-                  height={600}
-                  className="pdp-image"
-                />
+                {product.images && product.images.length > 0 ? (
+                  <Image
+                    src={product.images[selectedImage].image}
+                    alt={product.name}
+                    width={600}
+                    height={600}
+                    className="pdp-image"
+                  />
+                ) : (
+                  <div className="pdp-no-image">No Image Available</div>
+                )}
               </div>
             </div>
-            <div className="pdp-thumbnail-strip">
-              {product.images.map((image, index) => (
-                <div
-                  key={index}
-                  className={`pdp-thumbnail ${selectedImage === index ? 'active' : ''}`}
-                  onClick={() => setSelectedImage(index)}
-                >
-                  <Image
-                    src={image}
-                    alt={`${product.name} view ${index + 1}`}
-                    width={80}
-                    height={80}
-                  />
-                </div>
-              ))}
-            </div>
+            {product.images && product.images.length > 1 && (
+              <div className="pdp-thumbnail-strip">
+                {product.images.map((image, index) => (
+                  <div
+                    key={index}
+                    className={`pdp-thumbnail ${selectedImage === index ? 'active' : ''}`}
+                    onClick={() => setSelectedImage(index)}
+                  >
+                    <Image
+                      src={image.image}
+                      alt={`${product.name} view ${index + 1}`}
+                      width={80}
+                      height={80}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="pdp-info">
             <div className="pdp-header">
-              <div className="pdp-category-tag">{product.category} / {product.subcategory}</div>
+              {product.category && (
+                <div className="pdp-category-tag">
+                  {product.category.name} {product.subcategory && `/ ${product.subcategory}`}
+                </div>
+              )}
               <h1 className="pdp-title">{product.name}</h1>
               
               <div className="pdp-meta">
-                <div className="pdp-ratings">
-                  <div className="pdp-stars">
-                    {renderStars(product.rating)}
+                {product.rating && (
+                  <div className="pdp-ratings">
+                    <div className="pdp-stars">
+                      {renderStars(product.rating)}
+                    </div>
+                    <span className="pdp-rating-value">{product.rating}</span>
+                    <span className="pdp-reviews-count">
+                      ({product.reviews_count || 0} reviews)
+                    </span>
                   </div>
-                  <span className="pdp-rating-value">{product.rating}</span>
-                  <span className="pdp-reviews-count">({product.reviews} reviews)</span>
-                </div>
+                )}
                 
                 <button className="pdp-share-button">
                   <FaShare /> Share
@@ -198,44 +241,32 @@ export default function ProductDetail({ params }) {
               </div>
 
               <div className="pdp-price">
-                ${product.price.toFixed(2)}
+                ${formatPrice(product.price)}
               </div>
             </div>
 
             <p className="pdp-description">{product.description}</p>
 
             {/* Size Selection */}
-            <div className="pdp-size-selection">
-              <div className="pdp-selection-header">
-                <label>Select Size</label>
-                <button className="pdp-size-guide-button">Size Guide</button>
+            {product.sizes && product.sizes.length > 0 && (
+              <div className="pdp-size-selection">
+                <div className="pdp-selection-header">
+                  <label>Select Size</label>
+                  <button className="pdp-size-guide-button">Size Guide</button>
+                </div>
+                <div className="pdp-size-options">
+                  {product.sizes.map((size) => (
+                    <button
+                      key={size}
+                      className={`pdp-size-option ${selectedSize === size ? 'active' : ''}`}
+                      onClick={() => setSelectedSize(size)}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="pdp-size-options">
-                {product.sizes.map((size) => (
-                  <button
-                    key={size}
-                    className={`pdp-size-option ${selectedSize === size ? 'active' : ''}`}
-                    onClick={() => setSelectedSize(size)}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Color Selection */}
-            <div className="pdp-color-selection">
-              <label>Available Colors</label>
-              <div className="pdp-color-options">
-                {product.colors.map((color, index) => (
-                  <div
-                    key={index}
-                    className="pdp-color-option"
-                    style={{ backgroundColor: color }}
-                  />
-                ))}
-              </div>
-            </div>
+            )}
 
             {/* Stock Status */}
             <div className="pdp-stock-status">
@@ -285,8 +316,20 @@ export default function ProductDetail({ params }) {
 
             {/* Action Buttons */}
             <div className="pdp-actions">
-              <button className="pdp-add-to-cart" onClick={handleAddToCart}>
-                <FaShoppingCart /> Add to Cart
+              <button 
+                className={`pdp-add-to-cart ${addedToCart ? 'added' : ''}`}
+                onClick={handleAddToCart}
+                disabled={product.stock <= 0}
+              >
+                {addedToCart ? (
+                  <>
+                    <FaCheck /> Added to Cart
+                  </>
+                ) : (
+                  <>
+                    <FaShoppingCart /> Add to Cart
+                  </>
+                )}
               </button>
               <button className="pdp-wishlist">
                 <FaHeart />
@@ -328,10 +371,20 @@ export default function ProductDetail({ params }) {
           
           <div className="pdp-details-content">
             <div className="pdp-specs-grid">
-              {product.specs.map((spec, index) => (
+              {/* Use API data if available, otherwise show default specs */}
+              {(product.specifications ? Object.entries(product.specifications) : [
+                ['Warranty', '2 Years Limited Warranty'],
+                ['Shipping', 'Free Shipping (Orders over $100)'],
+                ['Returns', '30-Day Easy Returns'],
+                ['Support', '24/7 Customer Support'],
+                ['Quality', 'Premium Quality Guaranteed'],
+                ['Material', 'High-Grade Materials'],
+                ['Origin', 'Imported'],
+                ['Care Instructions', 'Follow Product Label Instructions']
+              ]).map(([key, value], index) => (
                 <div key={index} className="pdp-spec-item">
-                  <span className="pdp-spec-label">{spec.label}</span>
-                  <span className="pdp-spec-value">{spec.value}</span>
+                  <span className="pdp-spec-label">{key}</span>
+                  <span className="pdp-spec-value">{value}</span>
                 </div>
               ))}
             </div>
@@ -339,7 +392,15 @@ export default function ProductDetail({ params }) {
             <div className="pdp-features-list">
               <h3>Premium Features</h3>
               <ul>
-                {product.features.map((feature, index) => (
+                {/* Use API data if available, otherwise show default features */}
+                {(product.features && product.features.length > 0 ? product.features : [
+                  'Premium Quality Materials',
+                  'Durable Construction',
+                  'Ergonomic Design',
+                  'Easy Maintenance',
+                  'Versatile Usage',
+                  'Modern Aesthetics'
+                ]).map((feature, index) => (
                   <li key={index}>
                     <FaCheck /> {feature}
                   </li>
@@ -350,42 +411,62 @@ export default function ProductDetail({ params }) {
         </div>
 
         {/* Related Products */}
-        <div className="pdp-related-products">
-          <h2>You Might Also Like</h2>
-          <div className="pdp-related-products-grid">
-            {relatedProducts.map((product) => (
-              <div key={product.id} className="pdp-related-product-card">
-                <div className="pdp-related-product-image">
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    width={200}
-                    height={200}
-                  />
-                </div>
-                <div className="pdp-related-product-info">
-                  <h3>{product.name}</h3>
-                  <div className="pdp-related-product-meta">
-                    <span className="pdp-related-product-price">${product.price.toFixed(2)}</span>
-                    <div className="pdp-related-product-rating">
-                      {renderStars(product.rating)}
+        {relatedProducts.length > 0 && (
+          <div className="pdp-related-products">
+            <h2>You Might Also Like</h2>
+            <div className="pdp-related-products-grid">
+              {relatedProducts.map((relatedProduct) => (
+                <Link 
+                  href={`/products/${relatedProduct.id}`} 
+                  key={relatedProduct.id} 
+                  className="pdp-related-product-card"
+                >
+                  <div className="pdp-related-product-image">
+                    {relatedProduct.images && relatedProduct.images.length > 0 ? (
+                      <Image
+                        src={relatedProduct.images[0].image}
+                        alt={relatedProduct.name}
+                        width={200}
+                        height={200}
+                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                      />
+                    ) : (
+                      <div className="pdp-no-image">No Image Available</div>
+                    )}
+                  </div>
+                  <div className="pdp-related-product-info">
+                    <h3>{relatedProduct.name}</h3>
+                    <div className="pdp-related-product-meta">
+                      <span className="pdp-related-product-price">
+                        ${formatPrice(relatedProduct.price)}
+                      </span>
+                      {relatedProduct.rating && (
+                        <div className="pdp-related-product-rating">
+                          {renderStars(relatedProduct.rating)}
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
-              </div>
-            ))}
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Sticky Add to Cart Bar (Mobile) */}
       <div className={`pdp-sticky-add-to-cart ${isSticky ? 'visible' : ''}`}>
         <div className="pdp-sticky-product-info">
           <span className="pdp-sticky-product-name">{product.name}</span>
-          <span className="pdp-sticky-product-price">${product.price.toFixed(2)}</span>
+          <span className="pdp-sticky-product-price">${formatPrice(product.price)}</span>
         </div>
-        <button className="pdp-sticky-add-to-cart-btn" onClick={handleAddToCart}>
-          <FaShoppingCart /> Add to Cart
+        <button 
+          className={`pdp-sticky-add-to-cart-btn ${addedToCart ? 'added' : ''}`}
+          onClick={handleAddToCart}
+          disabled={product.stock <= 0}
+        >
+          {addedToCart ? <FaCheck /> : <FaShoppingCart />} 
+          {addedToCart ? 'Added' : 'Add to Cart'}
         </button>
       </div>
     </div>

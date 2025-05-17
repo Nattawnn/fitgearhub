@@ -3,81 +3,41 @@
 import { useState, useEffect } from 'react';
 import './order.css';
 import Link from 'next/link';
+import { FaShoppingBag } from 'react-icons/fa';
 
 export default function OrderPage() {
-  const [orders, setOrders] = useState([
-    {
-      id: '1234215124123',
-      date: '24 June 2024',
-      total: 380,
-      items: [
-        {
-          id: 1,
-          name: 'Premium Boxing Gloves',
-          description: 'Professional grade leather gloves\nColor: Red',
-          status: 'delivered',
-          quantity: 1,
-          price: 180,
-          image: 'https://res.cloudinary.com/dstl8qazf/image/upload/v1746800160/b2zemgektesep1nqfirh.png'
-        },
-        {
-          id: 2,
-          name: 'Pro Performance Stud Shoes',
-          description: 'Engineered for explosive acceleration\nSize: US 10',
-          status: 'processing',
-          quantity: 1,
-          price: 180,
-          image: 'https://res.cloudinary.com/dstl8qazf/image/upload/v1746800238/vhorpxgcge2ommmcy3pl.png'
-        },
-        {
-          id: 3,
-          name: 'Elite Series Dumbbells',
-          description: 'Precision-engineered cast iron\nWeight: 20kg',
-          status: 'shipped',
-          quantity: 1,
-          price: 20,
-          image: 'https://res.cloudinary.com/dstl8qazf/image/upload/v1746800242/ucobyaucgrxgvyksfm5a.png'
-        }
-      ]
-    },
-    {
-      id: '1234215124124',
-      date: '24 June 2024',
-      total: 380,
-      items: [
-        {
-          id: 4,
-          name: 'Premium Boxing Gloves',
-          description: 'Professional grade leather gloves\nColor: Black',
-          status: 'delivered',
-          quantity: 1,
-          price: 180,
-          image: 'https://res.cloudinary.com/dstl8qazf/image/upload/v1746800160/b2zemgektesep1nqfirh.png'
-        },
-        {
-          id: 5,
-          name: 'Pro Performance Stud Shoes',
-          description: 'Engineered for explosive acceleration\nSize: US 9',
-          status: 'processing',
-          quantity: 1,
-          price: 180,
-          image: 'https://res.cloudinary.com/dstl8qazf/image/upload/v1746800238/vhorpxgcge2ommmcy3pl.png'
-        },
-        {
-          id: 6,
-          name: 'Elite Series Dumbbells',
-          description: 'Precision-engineered cast iron\nWeight: 15kg',
-          status: 'shipped',
-          quantity: 1,
-          price: 20,
-          image: 'https://res.cloudinary.com/dstl8qazf/image/upload/v1746800242/ucobyaucgrxgvyksfm5a.png'
-        }
-      ]
-    }
-  ]);
-
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Helper function to format price
+  const formatPrice = (price) => {
+    const numPrice = parseFloat(price);
+    return !isNaN(numPrice) ? numPrice.toFixed(2) : '0.00';
+  };
+
+  useEffect(() => {
+    // Fetch orders from localStorage
+    const fetchOrders = () => {
+      setLoading(true);
+      try {
+        const savedOrders = localStorage.getItem('orders');
+        if (savedOrders) {
+          setOrders(JSON.parse(savedOrders));
+        } else {
+          setOrders([]);
+        }
+      } catch (error) {
+        console.error('Error loading orders from localStorage:', error);
+        setOrders([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   const getStatusText = (status) => {
     const statusMap = {
@@ -92,31 +52,31 @@ export default function OrderPage() {
     const steps = [
       {
         title: 'Order Placed',
-        date: '24 June 2024',
+        date: new Date().toLocaleDateString(),
         location: 'Online',
         isCompleted: true
       },
       {
         title: 'Order Confirmed',
-        date: '24 June 2024',
+        date: new Date().toLocaleDateString(),
         location: 'FitGear Hub',
         isCompleted: true
       },
       {
         title: 'Processing',
-        date: '25 June 2024',
+        date: new Date(Date.now() + 86400000).toLocaleDateString(), // +1 day
         location: 'Warehouse',
         isCompleted: status !== 'processing'
       },
       {
         title: 'Shipped',
-        date: '26 June 2024',
+        date: new Date(Date.now() + 172800000).toLocaleDateString(), // +2 days
         location: 'Distribution Center',
         isCompleted: status === 'shipped' || status === 'delivered'
       },
       {
         title: 'Delivered',
-        date: '27 June 2024',
+        date: new Date(Date.now() + 259200000).toLocaleDateString(), // +3 days
         location: 'Customer Address',
         isCompleted: status === 'delivered'
       }
@@ -134,14 +94,24 @@ export default function OrderPage() {
     setSelectedItem(null);
   };
 
+  if (loading) {
+    return (
+      <div className="fitgear-order-history-container">
+        <h1 className="fitgear-order-history-title">Order History</h1>
+        <div className="fitgear-loading-orders">Loading your orders...</div>
+      </div>
+    );
+  }
+
   if (orders.length === 0) {
     return (
-      <div className="order-history-container">
-        <h1 className="order-history-title">Order History</h1>
-        <div className="empty-orders">
+      <div className="fitgear-order-history-container">
+        <h1 className="fitgear-order-history-title">Order History</h1>
+        <div className="fitgear-empty-orders">
+          <FaShoppingBag className="fitgear-empty-icon" />
           <h3>No Orders Yet</h3>
           <p>Looks like you haven't made any orders yet.</p>
-          <Link href="/catalog" className="shop-now-btn">
+          <Link href="/catalog" className="fitgear-shop-now-btn">
             Start Shopping
           </Link>
         </div>
@@ -150,47 +120,55 @@ export default function OrderPage() {
   }
 
   return (
-    <div className="order-history-container">
-      <h1 className="order-history-title">Order History</h1>
+    <div className="fitgear-order-history-container">
+      <h1 className="fitgear-order-history-title">Order History</h1>
       
       {orders.map((order) => (
-        <div key={order.id} className="order-history-card">
-          <div className="order-history-header">
-            <div className="order-history-header-item">
-              Order Place
-              <strong>{order.date}</strong>
+        <div key={order.id} className="fitgear-order-history-card">
+          <div className="fitgear-order-history-header">
+            <div className="fitgear-order-history-header-item">
+              Order Placed
+              <strong>{new Date(order.date).toLocaleDateString()}</strong>
             </div>
-            <div className="order-history-header-item">
+            <div className="fitgear-order-history-header-item">
               Order
               <strong>#{order.id}</strong>
             </div>
-            <div className="order-history-header-item order-history-header-total">
+            <div className="fitgear-order-history-header-item fitgear-order-history-header-total">
               Total
-              <strong>${order.total.toFixed(2)}</strong>
+              <strong>${formatPrice(order.total)}</strong>
             </div>
           </div>
           
           {order.items.map((item) => (
-            <div key={item.id} className="order-history-item">
-              <div className="order-history-image">
-                <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            <div key={item.id} className="fitgear-order-history-item">
+              <div className="fitgear-order-history-image">
+                {item.images && item.images.length > 0 ? (
+                  <img 
+                    src={item.images[0].image} 
+                    alt={item.name} 
+                    style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
+                  />
+                ) : (
+                  <div className="fitgear-placeholder-image"></div>
+                )}
               </div>
               
-              <div className="order-history-details">
-                <div className="order-history-name">{item.name}</div>
-                {item.description.split('\n').map((line, i) => (
-                  <div key={i} className="order-history-description">{line}</div>
-                ))}
-                <div className={`order-history-status ${item.status}`}>
-                  {getStatusText(item.status)}
+              <div className="fitgear-order-history-details">
+                <div className="fitgear-order-history-name">{item.name}</div>
+                <div className="fitgear-order-history-description">
+                  {item.size && <span>Size: {item.size}</span>}
+                </div>
+                <div className={`fitgear-order-history-status ${item.status || 'processing'}`}>
+                  {getStatusText(item.status || 'processing')}
                 </div>
               </div>
               
-              <div className="order-history-price-quantity">
-                <div className="order-history-quantity">Quantity: {item.quantity}</div>
-                <div className="order-history-price">${item.price.toFixed(2)}</div>
+              <div className="fitgear-order-history-price-quantity">
+                <div className="fitgear-order-history-quantity">Quantity: {item.quantity}</div>
+                <div className="fitgear-order-history-price">${formatPrice(item.price)}</div>
                 <button 
-                  className="order-history-view-details"
+                  className="fitgear-order-history-view-details"
                   onClick={() => handleViewDetails(order.id, item)}
                 >
                   View Details
@@ -202,68 +180,72 @@ export default function OrderPage() {
       ))}
 
       {isModalOpen && selectedItem && (
-        <div className="modal-overlay" onClick={closeModal}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <button className="modal-close" onClick={closeModal}>×</button>
-            <div className="modal-header">
+        <div className="fitgear-modal-overlay" onClick={closeModal}>
+          <div className="fitgear-modal-content" onClick={e => e.stopPropagation()}>
+            <button className="fitgear-modal-close" onClick={closeModal}>×</button>
+            <div className="fitgear-modal-header">
               <h2>Order Details</h2>
-              <div className="modal-order-id">Order #{selectedItem.orderId}</div>
+              <div className="fitgear-modal-order-id">Order #{selectedItem.orderId}</div>
             </div>
-            <div className="modal-body">
-              <div className="modal-main-content">
-                <div className="modal-left-section">
-                  <div className="product-section">
-                    <div className="modal-product-image">
-                      <img src={selectedItem.image} alt={selectedItem.name} />
+            <div className="fitgear-modal-body">
+              <div className="fitgear-modal-main-content">
+                <div className="fitgear-modal-left-section">
+                  <div className="fitgear-product-section">
+                    <div className="fitgear-modal-product-image">
+                      {selectedItem.images && selectedItem.images.length > 0 ? (
+                        <img src={selectedItem.images[0].image} alt={selectedItem.name} />
+                      ) : (
+                        <div className="fitgear-placeholder-image"></div>
+                      )}
                     </div>
-                    <div className="modal-product-info">
-                      <div className="product-header">
+                    <div className="fitgear-modal-product-info">
+                      <div className="fitgear-product-header">
                         <h3>{selectedItem.name}</h3>
-                        <div className={`modal-status ${selectedItem.status}`}>
-                          {getStatusText(selectedItem.status)}
+                        <div className={`fitgear-modal-status ${selectedItem.status || 'processing'}`}>
+                          {getStatusText(selectedItem.status || 'processing')}
                         </div>
                       </div>
                       
-                      <div className="product-details">
-                        <div className="detail-group">
+                      <div className="fitgear-product-details">
+                        <div className="fitgear-detail-group">
                           <h4>Product Details</h4>
-                          {selectedItem.description.split('\n').map((line, i) => (
-                            <p key={i} className="modal-description">{line}</p>
-                          ))}
+                          {selectedItem.size && (
+                            <p className="fitgear-modal-description">Size: {selectedItem.size}</p>
+                          )}
                         </div>
 
-                        <div className="detail-group">
+                        <div className="fitgear-detail-group">
                           <h4>Order Information</h4>
-                          <div className="info-grid">
-                            <div className="info-item">
+                          <div className="fitgear-info-grid">
+                            <div className="fitgear-info-item">
                               <span>Order ID</span>
                               <strong>#{selectedItem.orderId}</strong>
                             </div>
-                            <div className="info-item">
+                            <div className="fitgear-info-item">
                               <span>Unit Price</span>
-                              <strong>${selectedItem.price.toFixed(2)}</strong>
+                              <strong>${formatPrice(selectedItem.price)}</strong>
                             </div>
-                            <div className="info-item">
+                            <div className="fitgear-info-item">
                               <span>Quantity</span>
                               <strong>{selectedItem.quantity}</strong>
                             </div>
-                            <div className="info-item">
+                            <div className="fitgear-info-item">
                               <span>Total</span>
-                              <strong>${(selectedItem.price * selectedItem.quantity).toFixed(2)}</strong>
+                              <strong>${formatPrice(selectedItem.price * selectedItem.quantity)}</strong>
                             </div>
                           </div>
                         </div>
 
-                        <div className="detail-group">
+                        <div className="fitgear-detail-group">
                           <h4>Shipping Details</h4>
-                          <div className="shipping-info">
-                            <div className="info-item">
+                          <div className="fitgear-shipping-info">
+                            <div className="fitgear-info-item">
                               <span>Delivery Method</span>
                               <strong>Express Delivery</strong>
                             </div>
-                            <div className="info-item">
+                            <div className="fitgear-info-item">
                               <span>Estimated Delivery</span>
-                              <strong>27 June 2024</strong>
+                              <strong>{new Date(Date.now() + 259200000).toLocaleDateString()}</strong>
                             </div>
                           </div>
                         </div>
@@ -271,21 +253,21 @@ export default function OrderPage() {
                     </div>
                   </div>
                 </div>
-                <div className="modal-right-section">
-                  <div className="tracking-section">
+                <div className="fitgear-modal-right-section">
+                  <div className="fitgear-tracking-section">
                     <h3>Order Tracking</h3>
-                    <div className="tracking-timeline">
-                      {getStatusSteps(selectedItem.status).map((step, index) => (
+                    <div className="fitgear-tracking-timeline">
+                      {getStatusSteps(selectedItem.status || 'processing').map((step, index) => (
                         <div 
                           key={index} 
-                          className={`timeline-item ${step.isCompleted ? 'completed' : ''} ${
-                            index === getStatusSteps(selectedItem.status).findIndex(s => !s.isCompleted) ? 'active' : ''
+                          className={`fitgear-timeline-item ${step.isCompleted ? 'completed' : ''} ${
+                            index === getStatusSteps(selectedItem.status || 'processing').findIndex(s => !s.isCompleted) ? 'active' : ''
                           }`}
                         >
-                          <div className="timeline-content">
-                            <div className="timeline-title">{step.title}</div>
-                            <div className="timeline-date">{step.date}</div>
-                            <div className="timeline-location">{step.location}</div>
+                          <div className="fitgear-timeline-content">
+                            <div className="fitgear-timeline-title">{step.title}</div>
+                            <div className="fitgear-timeline-date">{step.date}</div>
+                            <div className="fitgear-timeline-location">{step.location}</div>
                           </div>
                         </div>
                       ))}
@@ -294,13 +276,11 @@ export default function OrderPage() {
                 </div>
               </div>
             </div>
-            <div className="modal-footer">
-              <button className="modal-btn track-order">
-                <i className="fas fa-truck"></i>
+            <div className="fitgear-modal-footer">
+              <button className="fitgear-modal-btn track-order">
                 Track Order
               </button>
-              <button className="modal-btn contact-support">
-                <i className="fas fa-headset"></i>
+              <button className="fitgear-modal-btn contact-support">
                 Contact Support
               </button>
             </div>

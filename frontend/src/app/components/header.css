@@ -383,7 +383,7 @@
 }
 
 .cart-item-price::before {
-  content: '$';
+  /* content: '$'; */
   font-size: 12px;
   margin-right: 1px;
   opacity: 0.8;

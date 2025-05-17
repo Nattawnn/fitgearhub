@@ -17,8 +17,9 @@ export default function AdminProducts() {
     price: '',
     stock: '',
     category_id: '',
-    image: null
+    images: []
   });
+  const [editingProduct, setEditingProduct] = useState(null);
   const [categoryFormData, setCategoryFormData] = useState({
     name: ''
   });
@@ -34,12 +35,12 @@ export default function AdminProducts() {
   
   // API base URL with correct paths
   const API_BASE_URL = isProduction
-    ? 'https://fitgearhub-backend.onrender.com/api'
-    : 'http://localhost:8000/api';
+    ? 'https://fitgearhub-backend.onrender.com'
+    : 'http://localhost:8000';
   
   // Specific endpoint paths
-  const PRODUCTS_API = `${API_BASE_URL}/products/`;
-  const CATEGORIES_API = `${API_BASE_URL}/categories/`;
+  const PRODUCTS_API = `${API_BASE_URL}/api/products/`;
+  const CATEGORIES_API = `${API_BASE_URL}/api/categories/`;
 
   useEffect(() => {
     console.log('Is production environment:', isProduction);
@@ -190,12 +191,58 @@ export default function AdminProducts() {
     }
   };
 
+  const handleEdit = (product) => {
+    setEditingProduct(product);
+    setFormData({
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      stock: product.stock,
+      category_id: product.category?.id || '',
+      images: []
+    });
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDelete = async (productId) => {
+    if (!confirm('Are you sure you want to delete this product? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${PRODUCTS_API}${productId}/`, {
+        method: 'DELETE',
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorMessage = 'Failed to delete product';
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.detail || errorMessage;
+        } catch (e) {
+          errorMessage = `Failed to delete product: ${response.status} ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
+      }
+
+      setSuccess('Product deleted successfully!');
+      fetchProducts();
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      setError(error.message || 'Error deleting product. Please try again.');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
 
-    // Form validation
     if (!formData.name || !formData.description || !formData.price || !formData.stock) {
       setError('Please fill all required fields');
       return;
@@ -212,14 +259,20 @@ export default function AdminProducts() {
         productData.append('category_id', formData.category_id);
       }
       
-      if (formData.image) {
-        productData.append('image', formData.image);
+      if (formData.images && formData.images.length > 0) {
+        formData.images.forEach((image) => {
+          productData.append('uploaded_images', image);
+        });
       }
 
-      console.log('Submitting product with data:', Object.fromEntries(productData));
+      const url = editingProduct 
+        ? `${PRODUCTS_API}${editingProduct.id}/`
+        : PRODUCTS_API;
+      
+      const method = editingProduct ? 'PATCH' : 'POST';
 
-      const response = await fetch(PRODUCTS_API, {
-        method: 'POST',
+      const response = await fetch(url, {
+        method: method,
         body: productData,
         headers: {
           'Accept': 'application/json',
@@ -227,29 +280,24 @@ export default function AdminProducts() {
       });
 
       if (!response.ok) {
-        console.error('Error response:', response);
         const errorText = await response.text();
-        console.error('Error text:', errorText);
-        
-        let errorMessage = 'Failed to create product';
+        let errorMessage = `Failed to ${editingProduct ? 'update' : 'create'} product`;
         try {
           const errorData = JSON.parse(errorText);
           errorMessage = errorData.detail || errorMessage;
         } catch (e) {
-          // If parsing fails, use the status text
-          errorMessage = `Failed to create product: ${response.status} ${response.statusText}`;
+          errorMessage = `Failed to ${editingProduct ? 'update' : 'create'} product: ${response.status} ${response.statusText}`;
         }
-        
         throw new Error(errorMessage);
       }
 
       const data = await response.json();
-      setSuccess('Product created successfully!');
+      setSuccess(`Product ${editingProduct ? 'updated' : 'created'} successfully!`);
       resetForm();
       fetchProducts();
     } catch (error) {
-      console.error('Error creating product:', error);
-      setError(error.message || 'Error creating product. Please try again.');
+      console.error('Error submitting product:', error);
+      setError(error.message || `Error ${editingProduct ? 'updating' : 'creating'} product. Please try again.`);
     }
   };
 
@@ -260,10 +308,11 @@ export default function AdminProducts() {
       price: '',
       stock: '',
       category_id: '',
-      image: null
+      images: []
     });
     setPreviewUrl('');
     setShowForm(false);
+    setEditingProduct(null);
   };
 
   const deleteCategory = async (categoryId) => {
@@ -305,11 +354,11 @@ export default function AdminProducts() {
 
   return (
     <div className="admin-products-page">
-      <header className="admin-header">
+      <header className="admin-products-header">
         <h1>Product Management</h1>
-        <div className="admin-header-buttons">
+        <div className="admin-products-header-buttons">
           <button 
-            className="add-category-btn" 
+            className="admin-products-add-btn admin-products-add-category-btn" 
             onClick={() => {
               setShowCategoryForm(!showCategoryForm);
               if (showForm) setShowForm(false);
@@ -318,7 +367,7 @@ export default function AdminProducts() {
             {showCategoryForm ? 'Cancel' : 'Add Category'}
           </button>
           <button 
-            className="add-product-btn" 
+            className="admin-products-add-btn admin-products-add-product-btn" 
             onClick={() => {
               setShowForm(!showForm);
               if (showCategoryForm) setShowCategoryForm(false);
@@ -329,23 +378,23 @@ export default function AdminProducts() {
         </div>
       </header>
 
-      {error && <div className="error-message">{error}</div>}
-      {success && <div className="success-message">{success}</div>}
+      {error && <div className="admin-products-error-message">{error}</div>}
+      {success && <div className="admin-products-success-message">{success}</div>}
 
       {/* Backend connection status */}
-      <div className="api-status">
+      <div className="admin-products-api-status">
         {isProduction ? (
-          <p className="info-message">Using production API at {API_BASE_URL}</p>
+          <p className="admin-products-info-message">Using production API at {API_BASE_URL}</p>
         ) : (
-          <p className="info-message">Using development API at {API_BASE_URL}</p>  
+          <p className="admin-products-info-message">Using development API at {API_BASE_URL}</p>  
         )}
       </div>
 
       {showCategoryForm && (
-        <div className="product-form-container">
+        <div className="admin-products-form-container">
           <h2>Create New Category</h2>
-          <form onSubmit={createCategory} className="product-form">
-            <div className="form-group">
+          <form onSubmit={createCategory} className="admin-products-form">
+            <div className="admin-products-form-group">
               <label htmlFor="category-name">Category Name*</label>
               <input 
                 type="text" 
@@ -357,11 +406,11 @@ export default function AdminProducts() {
               />
             </div>
             
-            <div className="form-actions">
-              <button type="button" onClick={() => setShowCategoryForm(false)} className="cancel-btn">
+            <div className="admin-products-form-actions">
+              <button type="button" onClick={() => setShowCategoryForm(false)} className="admin-products-cancel-btn">
                 Cancel
               </button>
-              <button type="submit" className="submit-btn">
+              <button type="submit" className="admin-products-submit-btn">
                 Create Category
               </button>
             </div>
@@ -370,15 +419,15 @@ export default function AdminProducts() {
       )}
 
       {/* Category List */}
-      <div className="categories-list-section">
+      <div className="admin-products-categories-section">
         <h2>Current Categories</h2>
         {categories.length > 0 ? (
-          <div className="categories-chips">
+          <div className="admin-products-categories-chips">
             {categories.map(category => (
-              <div key={category.id} className="category-chip">
+              <div key={category.id} className="admin-products-category-chip">
                 {category.name}
                 <button
-                  className="delete-category-btn"
+                  className="admin-products-category-delete-btn"
                   onClick={() => deleteCategory(category.id)}
                   title="Delete category"
                 >
@@ -388,15 +437,15 @@ export default function AdminProducts() {
             ))}
           </div>
         ) : (
-          <p className="no-categories">No categories found. Please add some categories first.</p>
+          <p className="admin-products-no-categories">No categories found. Please add some categories first.</p>
         )}
       </div>
 
       {showForm && (
-        <div className="product-form-container">
-          <h2>Create New Product</h2>
-          <form onSubmit={handleSubmit} className="product-form">
-            <div className="form-group">
+        <div className="admin-products-form-container">
+          <h2>{editingProduct ? 'Edit Product' : 'Create New Product'}</h2>
+          <form onSubmit={handleSubmit} className="admin-products-form">
+            <div className="admin-products-form-group">
               <label htmlFor="name">Product Name*</label>
               <input 
                 type="text" 
@@ -408,7 +457,7 @@ export default function AdminProducts() {
               />
             </div>
 
-            <div className="form-group">
+            <div className="admin-products-form-group">
               <label htmlFor="description">Description*</label>
               <textarea 
                 id="description" 
@@ -420,8 +469,8 @@ export default function AdminProducts() {
               ></textarea>
             </div>
 
-            <div className="form-row">
-              <div className="form-group">
+            <div className="admin-products-form-row">
+              <div className="admin-products-form-group">
                 <label htmlFor="price">Price (THB)*</label>
                 <input 
                   type="number" 
@@ -435,7 +484,7 @@ export default function AdminProducts() {
                 />
               </div>
 
-              <div className="form-group">
+              <div className="admin-products-form-group">
                 <label htmlFor="stock">Stock*</label>
                 <input 
                   type="number" 
@@ -449,7 +498,7 @@ export default function AdminProducts() {
               </div>
             </div>
 
-            <div className="form-group">
+            <div className="admin-products-form-group">
               <label htmlFor="category_id">Category</label>
               <select 
                 id="category_id" 
@@ -458,53 +507,76 @@ export default function AdminProducts() {
                 onChange={handleChange}
               >
                 <option value="">Select a category</option>
-                {Array.isArray(categories) && categories.map(category => (
+                {categories.map(category => (
                   <option key={category.id} value={category.id}>
                     {category.name}
                   </option>
                 ))}
               </select>
               {categories.length === 0 && (
-                <p className="field-hint">
+                <p className="admin-products-field-hint">
                   No categories available. Please add a category first.
                 </p>
               )}
             </div>
 
-            <div className="form-group">
-              <label htmlFor="image">Product Image</label>
+            <div className="admin-products-form-group">
+              <label htmlFor="images">Product Images (Up to 4 images)</label>
               <input 
                 type="file" 
-                id="image" 
-                name="image"
-                onChange={handleImageChange}
+                id="images" 
+                name="images"
+                onChange={(e) => {
+                  const files = Array.from(e.target.files);
+                  if (files.length > 4) {
+                    setError('You can only upload up to 4 images');
+                    return;
+                  }
+                  setFormData({
+                    ...formData,
+                    images: files
+                  });
+                  const previewUrls = files.map(file => URL.createObjectURL(file));
+                  setPreviewUrl(previewUrls);
+                }}
                 accept="image/*"
+                multiple
+                max="4"
               />
-              {previewUrl && (
-                <div className="image-preview">
-                  <img src={previewUrl} alt="Preview" />
+              {previewUrl && previewUrl.length > 0 && (
+                <div className="admin-products-images-preview-container">
+                  {Array.isArray(previewUrl) ? 
+                    previewUrl.map((url, index) => (
+                      <div key={index} className="admin-products-image-preview">
+                        <img src={url} alt={`Preview ${index + 1}`} />
+                      </div>
+                    )) : 
+                    <div className="admin-products-image-preview">
+                      <img src={previewUrl} alt="Preview" />
+                    </div>
+                  }
                 </div>
               )}
             </div>
 
-            <div className="form-actions">
-              <button type="button" onClick={resetForm} className="cancel-btn">
+            <div className="admin-products-form-actions">
+              <button type="button" onClick={resetForm} className="admin-products-cancel-btn">
                 Cancel
               </button>
-              <button type="submit" className="submit-btn">
-                Create Product
+              <button type="submit" className="admin-products-submit-btn">
+                {editingProduct ? 'Update Product' : 'Create Product'}
               </button>
             </div>
           </form>
         </div>
       )}
 
-      <div className="products-list">
+      <div className="admin-products-list">
         <h2>Current Products</h2>
         {loading ? (
           <p>Loading products...</p>
         ) : products.length > 0 ? (
-          <table className="products-table">
+          <table className="admin-products-table">
             <thead>
               <tr>
                 <th>Image</th>
@@ -519,30 +591,45 @@ export default function AdminProducts() {
               {products.map(product => (
                 <tr key={product.id}>
                   <td>
-                    {product.image ? (
-                      <img 
-                        src={product.image} 
-                        alt={product.name} 
-                        className="product-thumbnail"
-                      />
+                    {product.images && product.images.length > 0 ? (
+                      <div className="admin-products-images-container">
+                        {product.images.map((imageObj, index) => (
+                          <img 
+                            key={index}
+                            src={imageObj.image} 
+                            alt={`${product.name} - Image ${index + 1}`} 
+                            className="admin-products-thumbnail"
+                          />
+                        ))}
+                      </div>
                     ) : (
-                      <div className="no-image">No Image</div>
+                      <div className="admin-products-no-image">No Image</div>
                     )}
                   </td>
                   <td>{product.name}</td>
                   <td>฿{parseFloat(product.price).toFixed(2)}</td>
                   <td>{product.stock}</td>
                   <td>{product.category ? product.category.name : 'Uncategorized'}</td>
-                  <td className="actions-cell">
-                    <button className="edit-btn">Edit</button>
-                    <button className="delete-btn">Delete</button>
+                  <td className="admin-products-actions-cell">
+                    <button 
+                      className="admin-products-edit-btn"
+                      onClick={() => handleEdit(product)}
+                    >
+                      Edit
+                    </button>
+                    <button 
+                      className="admin-products-delete-btn"
+                      onClick={() => handleDelete(product.id)}
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
-          <p className="no-products">No products found. Add your first product!</p>
+          <p className="admin-products-no-products">No products found. Add your first product!</p>
         )}
       </div>
     </div>

@@ -8,6 +8,7 @@ import './header.css';
 import SearchHeader from './header/SearchHeader';
 import CartHeader from './header/CartHeader';
 import ProfileHeader from './header/ProfileHeader';
+import { useCart } from '../contexts/CartContext';
 
 export default function Header() {
   const pathname = usePathname();
@@ -21,6 +22,12 @@ export default function Header() {
   const menuRef = useRef(null);
   const cartRef = useRef(null);
   const profileRef = useRef(null);
+  const { isCartOpen } = useCart();
+
+  // Keep the cartOpen state in sync with the context
+  useEffect(() => {
+    setCartOpen(isCartOpen);
+  }, [isCartOpen]);
 
   const categories = [
     {
@@ -122,7 +129,6 @@ export default function Header() {
             <SearchHeader searchActive={searchActive} setSearchActive={setSearchActive} />
             <CartHeader 
               ref={cartRef}
-              cartOpen={cartOpen} 
               setCartOpen={setCartOpen} 
               setProfileOpen={setProfileOpen} 
             />

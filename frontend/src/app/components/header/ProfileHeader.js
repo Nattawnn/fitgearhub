@@ -1,8 +1,10 @@
 'use client';
 
 import React, { forwardRef } from 'react';
-import { FaUser, FaUserCircle, FaHistory, FaCog, FaSignOutAlt, FaHeart } from 'react-icons/fa';
+import { FaUser, FaUserCircle, FaHistory, FaSignOutAlt } from 'react-icons/fa';
+import Link from 'next/link';
 import './ProfileHeader.css';
+import { useRouter } from 'next/navigation';
 
 const ProfileHeader = forwardRef(({ profileOpen, setProfileOpen, setCartOpen }, ref) => {
   // Sample user data
@@ -13,6 +15,8 @@ const ProfileHeader = forwardRef(({ profileOpen, setProfileOpen, setCartOpen }, 
     isLoggedIn: true
   };
 
+  const router = useRouter();
+
   const toggleProfile = () => {
     setProfileOpen(!profileOpen);
     if (setCartOpen) setCartOpen(false);
@@ -20,7 +24,8 @@ const ProfileHeader = forwardRef(({ profileOpen, setProfileOpen, setCartOpen }, 
 
   const handleSignOut = () => {
     console.log('User signed out');
-    // In a real app, this would handle the sign out process
+    // Redirect to homepage
+    router.push('/');
   };
 
   return (
@@ -44,22 +49,10 @@ const ProfileHeader = forwardRef(({ profileOpen, setProfileOpen, setCartOpen }, 
                 </div>
               </div>
               <div className="profile-menu">
-                <a href="/profile" className="profile-menu-item">
-                  <FaUserCircle />
-                  <span>My Profile</span>
-                </a>
-                <a href="/orders" className="profile-menu-item">
+                <Link href="/orders" className="profile-menu-item">
                   <FaHistory />
                   <span>Order History</span>
-                </a>
-                <a href="/wishlist" className="profile-menu-item">
-                  <FaHeart />
-                  <span>Wishlist</span>
-                </a>
-                <a href="/settings" className="profile-menu-item">
-                  <FaCog />
-                  <span>Settings</span>
-                </a>
+                </Link>
                 <button className="sign-out-button" onClick={handleSignOut}>
                   <FaSignOutAlt />
                   <span>Sign Out</span>
@@ -68,8 +61,8 @@ const ProfileHeader = forwardRef(({ profileOpen, setProfileOpen, setCartOpen }, 
             </>
           ) : (
             <div className="auth-options">
-              <a href="/login" className="auth-button login-button">Log In</a>
-              <a href="/register" className="auth-button register-button">Register</a>
+              <Link href="/login" className="auth-button login-button">Log In</Link>
+              <Link href="/register" className="auth-button register-button">Register</Link>
             </div>
           )}
         </div>

@@ -267,6 +267,24 @@
   transform: scale(1.1);
 }
 
+.fitgear-catalog-action-button.added {
+  background-color: #28a745;
+  color: white;
+  animation: addedPulse 0.3s ease-in-out;
+}
+
+@keyframes addedPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 .fitgear-catalog-product-info {
   padding: 20px;
 }
