@@ -89,14 +89,28 @@ if DATABASE_URL:
     try:
         DATABASES['default'] = dj_database_url.parse(DATABASE_URL)
         print(f"Using database configuration from DATABASE_URL")
-        # Test the connection to confirm it works
-        from django.db import connections
-        connections['default'].ensure_connection()
-        print("Database connection test successful")
+        
+        # Check if we need to set up the database from scratch
+        if '--run-syncdb' in sys.argv:
+            print("Will set up database tables from scratch")
+        else:
+            # Test the connection
+            from django.db import connections
+            try:
+                connections['default'].ensure_connection()
+                print("Database connection test successful")
+            except Exception as e:
+                print(f"Error connecting to database: {e}")
+                print("Falling back to SQLite database")
+                # Keep using the default SQLite database if connection fails
+                DATABASES['default'] = {
+                    'ENGINE': 'django.db.backends.sqlite3',
+                    'NAME': BASE_DIR / 'db.sqlite3',
+                }
     except Exception as e:
-        print(f"Error connecting to database: {e}")
+        print(f"Error setting up database: {e}")
         print("Falling back to SQLite database")
-        # Keep using the default SQLite database if connection fails
+        # Keep using the default SQLite database
         pass
 
 # Use SQLite for testing

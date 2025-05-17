@@ -16,7 +16,7 @@ services:
     env: python
     plan: free
     buildCommand: cd backend && pip install -r requirements.txt
-    startCommand: cd backend && python manage.py migrate cart 0002 --fake && python manage.py migrate && python manage.py runserver 0.0.0.0:$PORT
+    startCommand: cd backend && python manage.py migrate --run-syncdb && python manage.py runserver 0.0.0.0:$PORT
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: project_name.settings
@@ -32,4 +32,4 @@ services:
 # databases:
 #   - name: fitgearhub-db
 #     plan: free
-#     databaseName: fitgearhub 
+#     databaseName: fitgearhub
