@@ -10,8 +10,8 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('products', '0002_category_product_stock_product_category'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('products', '0001_initial'),
     ]
 
     operations = [
@@ -22,11 +22,11 @@ class Migration(migrations.Migration):
                 ('quantity', models.IntegerField(default=1)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('customer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
                 ('product', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='products.product')),
             ],
             options={
-                'unique_together': {('customer', 'product')},
+                'unique_together': {('user', 'product')},
             },
         ),
         migrations.CreateModel(
