@@ -49,6 +49,21 @@
   background-color: #4338ca;
 }
 
+/* API Status */
+.api-status {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 10px 16px;
+  margin-bottom: 20px;
+}
+
+.info-message {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
 /* Category List */
 .categories-list-section {
   background-color: white;
