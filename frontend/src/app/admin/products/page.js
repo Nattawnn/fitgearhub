@@ -266,6 +266,43 @@ export default function AdminProducts() {
     setShowForm(false);
   };
 
+  const deleteCategory = async (categoryId) => {
+    if (!confirm('Are you sure you want to delete this category? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${CATEGORIES_API}${categoryId}/`, {
+        method: 'DELETE',
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response text:', errorText);
+        
+        let errorMessage = 'Failed to delete category';
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.detail || errorMessage;
+        } catch (e) {
+          errorMessage = `Failed to delete category: ${response.status} ${response.statusText}`;
+        }
+        
+        throw new Error(errorMessage);
+      }
+
+      setSuccess('Category deleted successfully!');
+      fetchCategories(); // Refresh the categories list
+      fetchProducts();  // Refresh products as they might be affected
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      setError(error.message || 'Error deleting category. Please try again.');
+    }
+  };
+
   return (
     <div className="admin-products-page">
       <header className="admin-header">
@@ -340,6 +377,13 @@ export default function AdminProducts() {
             {categories.map(category => (
               <div key={category.id} className="category-chip">
                 {category.name}
+                <button
+                  className="delete-category-btn"
+                  onClick={() => deleteCategory(category.id)}
+                  title="Delete category"
+                >
+                  ×
+                </button>
               </div>
             ))}
           </div>
