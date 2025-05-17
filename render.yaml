@@ -22,12 +22,14 @@ services:
         value: project_name.settings
       - key: DEBUG
         value: "0"
-      - key: DATABASE_URL
-        fromDatabase:
-          name: fitgearhub-db
-          property: connectionString
+      # Temporarily comment out DATABASE_URL to use SQLite instead
+      # - key: DATABASE_URL
+      #   fromDatabase:
+      #     name: fitgearhub-db
+      #     property: connectionString
 
-databases:
-  - name: fitgearhub-db
-    plan: free
-    databaseName: fitgearhub 
+# Temporarily comment out database definition until we create a new one
+# databases:
+#   - name: fitgearhub-db
+#     plan: free
+#     databaseName: fitgearhub 
