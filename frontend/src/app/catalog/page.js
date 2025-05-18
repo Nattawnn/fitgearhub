@@ -320,15 +320,15 @@ export default function Catalog() {
                       className="fitgear-catalog-product-image"
                       onError={(e) => {
                         console.error("Image failed to load:", e.target.src);
-                        // Try alternative URL
+                        // Replace placeholder.com with data URI
                         const originalSrc = e.target.src;
                         if (originalSrc.includes("localhost") || !originalSrc.includes("https://")) {
                           // If using localhost or non-HTTPS, try the HTTPS URL from render
                           const fixedUrl = `https://fitgearhub-backend.onrender.com${originalSrc.split('/media')[1]}`;
                           e.target.src = fixedUrl;
                         } else {
-                          // Fallback to placeholder
-                          e.target.src = "https://via.placeholder.com/400x400?text=Image+Not+Available";
+                          // Fallback to data URI instead of placeholder.com
+                          e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iI2VlZWVlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMThweCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzk5OTk5OSI+SW1hZ2UgTm90IEF2YWlsYWJsZTwvdGV4dD48L3N2Zz4=";
                         }
                       }}
                     />
@@ -348,7 +348,8 @@ export default function Catalog() {
                                 const fixedUrl = `https://fitgearhub-backend.onrender.com${originalSrc.split('/media')[1]}`;
                                 e.target.src = fixedUrl;
                               } else {
-                                e.target.src = "https://via.placeholder.com/100x100?text=Not+Available";
+                                // Fallback to data URI instead of placeholder.com
+                                e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZWVlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTBweCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzk5OTk5OSI+Tm90IEF2YWlsYWJsZTwvdGV4dD48L3N2Zz4=";
                               }
                             }}
                           />
