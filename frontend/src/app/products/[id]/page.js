@@ -239,6 +239,18 @@ export default function ProductDetail({ params }) {
                     width={600}
                     height={600}
                     className="pdp-image"
+                    onError={(e) => {
+                      console.error("Product image failed to load:", e.target.src);
+                      const originalSrc = e.target.src;
+                      if (originalSrc.includes("localhost") || !originalSrc.includes("https://")) {
+                        // If using localhost URL, try the production URL
+                        const fixedUrl = `https://fitgearhub-backend.onrender.com${originalSrc.split('/media')[1]}`;
+                        e.target.src = fixedUrl;
+                      } else {
+                        // Fallback to data URI
+                        e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNjAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI2VlZWVlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjJweCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzk5OTk5OSI+SW1hZ2UgTm90IEF2YWlsYWJsZTwvdGV4dD48L3N2Zz4=";
+                      }
+                    }}
                   />
                 ) : (
                   <div className="pdp-no-image">No Image Available</div>
@@ -258,6 +270,18 @@ export default function ProductDetail({ params }) {
                       alt={`${product.name} view ${index + 1}`}
                       width={80}
                       height={80}
+                      onError={(e) => {
+                        console.error("Thumbnail image failed to load:", e.target.src);
+                        const originalSrc = e.target.src;
+                        if (originalSrc.includes("localhost") || !originalSrc.includes("https://")) {
+                          // If using localhost URL, try the production URL
+                          const fixedUrl = `https://fitgearhub-backend.onrender.com${originalSrc.split('/media')[1]}`;
+                          e.target.src = fixedUrl;
+                        } else {
+                          // Fallback to data URI
+                          e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjZWVlZWVlIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI4cHgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiM5OTk5OTkiPk5vdCBBdmFpbGFibGU8L3RleHQ+PC9zdmc+";
+                        }
+                      }}
                     />
                   </div>
                 ))}
@@ -481,6 +505,18 @@ export default function ProductDetail({ params }) {
                         width={200}
                         height={200}
                         style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                        onError={(e) => {
+                          console.error("Related product image failed to load:", e.target.src);
+                          const originalSrc = e.target.src;
+                          if (originalSrc.includes("localhost") || !originalSrc.includes("https://")) {
+                            // If using localhost URL, try the production URL
+                            const fixedUrl = `https://fitgearhub-backend.onrender.com${originalSrc.split('/media')[1]}`;
+                            e.target.src = fixedUrl;
+                          } else {
+                            // Fallback to data URI
+                            e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZWVlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTRweCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzk5OTk5OSI+SW1hZ2UgTm90IEF2YWlsYWJsZTwvdGV4dD48L3N2Zz4=";
+                          }
+                        }}
                       />
                     ) : (
                       <div className="pdp-no-image">No Image Available</div>

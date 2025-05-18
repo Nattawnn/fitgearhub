@@ -548,11 +548,27 @@ export default function AdminProducts() {
                   {Array.isArray(previewUrl) ? 
                     previewUrl.map((url, index) => (
                       <div key={index} className="admin-products-image-preview">
-                        <img src={url} alt={`Preview ${index + 1}`} />
+                        <img 
+                          src={url} 
+                          alt={`Preview ${index + 1}`} 
+                          onError={(e) => {
+                            console.error("Preview image failed to load:", e.target.src);
+                            // For previews, use a simple data URI as fallback
+                            e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZWVlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTJweCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzk5OTk5OSI+UHJldmlldyBJbWFnZTwvdGV4dD48L3N2Zz4=";
+                          }}
+                        />
                       </div>
                     )) : 
                     <div className="admin-products-image-preview">
-                      <img src={previewUrl} alt="Preview" />
+                      <img 
+                        src={previewUrl} 
+                        alt="Preview" 
+                        onError={(e) => {
+                          console.error("Preview image failed to load:", e.target.src);
+                          // For previews, use a simple data URI as fallback
+                          e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZWVlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTJweCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzk5OTk5OSI+UHJldmlldyBJbWFnZTwvdGV4dD48L3N2Zz4=";
+                        }}
+                      />
                     </div>
                   }
                 </div>
@@ -599,6 +615,18 @@ export default function AdminProducts() {
                             src={imageObj.image} 
                             alt={`${product.name} - Image ${index + 1}`} 
                             className="admin-products-thumbnail"
+                            onError={(e) => {
+                              console.error("Admin product image failed to load:", e.target.src);
+                              const originalSrc = e.target.src;
+                              if (originalSrc.includes("localhost") || !originalSrc.includes("https://")) {
+                                // If using localhost URL, try the production URL
+                                const fixedUrl = `https://fitgearhub-backend.onrender.com${originalSrc.split('/media')[1]}`;
+                                e.target.src = fixedUrl;
+                              } else {
+                                // Fallback to data URI
+                                e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjZWVlZWVlIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI4cHgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiM5OTk5OTkiPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==";
+                              }
+                            }}
                           />
                         ))}
                       </div>
