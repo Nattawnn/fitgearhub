@@ -64,17 +64,29 @@ export default function ProductDetail({ params }) {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_BASE_URL}/products/${params.id}/`);
+        const apiUrl = `${API_BASE_URL}/products/${params.id}/`;
+        console.log('Fetching product from:', apiUrl);
+        
+        const response = await fetch(apiUrl);
         if (!response.ok) {
-          throw new Error('Failed to fetch product');
+          console.error('Error response:', await response.text());
+          throw new Error(`Failed to fetch product: ${response.status}`);
         }
         const data = await response.json();
         setProduct(data);
         
         // Fetch related products from same category
         if (data.category) {
-          const relatedResponse = await fetch(`${API_BASE_URL}/products/?category=${data.category.id}&exclude=${params.id}`);
-          if (relatedResponse.ok) {
+          try {
+            const relatedUrl = `${API_BASE_URL}/products/?category=${data.category.id}&exclude=${params.id}`;
+            console.log('Fetching related products from:', relatedUrl);
+            
+            const relatedResponse = await fetch(relatedUrl);
+            if (!relatedResponse.ok) {
+              console.error('Error fetching related products:', await relatedResponse.text());
+              throw new Error(`Failed to fetch related products: ${relatedResponse.status}`);
+            }
+            
             const relatedData = await relatedResponse.json();
             // Check if the response has results property (paginated response)
             const relatedProducts = relatedData.results || relatedData;
@@ -85,13 +97,53 @@ export default function ProductDetail({ params }) {
               console.log('Related products response is not an array:', relatedProducts);
               setRelatedProducts([]);
             }
+          } catch (relatedError) {
+            console.error('Error fetching related products:', relatedError);
+            setRelatedProducts([]);
           }
         }
         
         setError(null);
       } catch (err) {
         console.error('Error fetching product:', err);
-        setError('Failed to load product. Please try again later.');
+        // Try alternative URL
+        try {
+          console.log('Trying alternative product URL...');
+          const altUrl = `https://fitgearhub-backend.onrender.com/api/products/${params.id}/`;
+          console.log('Alt product URL:', altUrl);
+          
+          const altResponse = await fetch(altUrl);
+          if (!altResponse.ok) {
+            throw new Error(`Alternative product URL failed: ${altResponse.status}`);
+          }
+          
+          const altData = await altResponse.json();
+          setProduct(altData);
+          setError(null);
+          
+          // Try to fetch related products
+          if (altData.category) {
+            try {
+              const altRelatedUrl = `https://fitgearhub-backend.onrender.com/api/products/?category=${altData.category.id}&exclude=${params.id}`;
+              const altRelatedResponse = await fetch(altRelatedUrl);
+              
+              if (altRelatedResponse.ok) {
+                const altRelatedData = await altRelatedResponse.json();
+                const altRelatedProducts = altRelatedData.results || altRelatedData;
+                
+                if (Array.isArray(altRelatedProducts)) {
+                  setRelatedProducts(altRelatedProducts.slice(0, 3));
+                }
+              }
+            } catch (altRelatedError) {
+              console.error('Error fetching alternative related products:', altRelatedError);
+              setRelatedProducts([]);
+            }
+          }
+        } catch (altErr) {
+          console.error('Alternative URL also failed:', altErr);
+          setError('Failed to load product. Please try again later.');
+        }
       } finally {
         setLoading(false);
       }
