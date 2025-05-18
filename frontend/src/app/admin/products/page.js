@@ -41,6 +41,7 @@ export default function AdminProducts() {
   // Specific endpoint paths
   const PRODUCTS_API = `${API_BASE_URL}/api/products/`;
   const CATEGORIES_API = `${API_BASE_URL}/api/categories/`;
+  const MEDIA_BASE_URL = `${API_BASE_URL}/`;
 
   useEffect(() => {
     console.log('Is production environment:', isProduction);
@@ -618,11 +619,23 @@ export default function AdminProducts() {
                             onError={(e) => {
                               console.error("Admin product image failed to load:", e.target.src);
                               const originalSrc = e.target.src;
-                              if (originalSrc.includes("localhost") || !originalSrc.includes("https://")) {
-                                // If using localhost URL, try the production URL
-                                const fixedUrl = `https://fitgearhub-backend.onrender.com${originalSrc.split('/media')[1]}`;
-                                e.target.src = fixedUrl;
-                              } else {
+                              try {
+                                // First try this approach for full URLs
+                                if (originalSrc.includes("localhost") || !originalSrc.includes("https://")) {
+                                  // Extract path after /media/ if it exists
+                                  if (originalSrc.includes('/media/')) {
+                                    const mediaPath = originalSrc.split('/media/')[1];
+                                    const fixedUrl = `${MEDIA_BASE_URL}media/${mediaPath}`;
+                                    console.log("Trying fixed URL:", fixedUrl);
+                                    e.target.src = fixedUrl;
+                                  } else {
+                                    throw new Error("Cannot fix URL - no media path");
+                                  }
+                                } else {
+                                  throw new Error("Using fallback image");
+                                }
+                              } catch (err) {
+                                console.log("Using fallback image:", err.message);
                                 // Fallback to data URI
                                 e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiBmaWxsPSIjZWVlZWVlIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI4cHgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiIGZpbGw9IiM5OTk5OTkiPk5vIEltYWdlPC90ZXh0Pjwvc3ZnPg==";
                               }

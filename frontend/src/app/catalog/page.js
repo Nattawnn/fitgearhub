@@ -17,8 +17,16 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ||
     ? `http://${window.location.hostname}:8000/api`
     : 'https://fitgearhub-backend.onrender.com/api');
 
+// Set media base URL
+const MEDIA_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
+  (typeof window !== 'undefined' && 
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? `http://${window.location.hostname}:8000`
+    : 'https://fitgearhub-backend.onrender.com');
+
 // Add debugging for API URL
 console.log('Using API URL:', API_BASE_URL);
+console.log('Using Media URL:', MEDIA_BASE_URL);
 
 export default function Catalog() {
   const [products, setProducts] = useState([]);
@@ -322,11 +330,22 @@ export default function Catalog() {
                         console.error("Image failed to load:", e.target.src);
                         // Replace placeholder.com with data URI
                         const originalSrc = e.target.src;
-                        if (originalSrc.includes("localhost") || !originalSrc.includes("https://")) {
-                          // If using localhost or non-HTTPS, try the HTTPS URL from render
-                          const fixedUrl = `https://fitgearhub-backend.onrender.com${originalSrc.split('/media')[1]}`;
-                          e.target.src = fixedUrl;
-                        } else {
+                        try {
+                          if (originalSrc.includes("localhost") || !originalSrc.includes("https://")) {
+                            // Extract path after /media/ if it exists
+                            if (originalSrc.includes('/media/')) {
+                              const mediaPath = originalSrc.split('/media/')[1];
+                              const fixedUrl = `${MEDIA_BASE_URL}/media/${mediaPath}`;
+                              console.log("Trying fixed URL:", fixedUrl);
+                              e.target.src = fixedUrl;
+                            } else {
+                              throw new Error("Cannot fix URL - no media path");
+                            }
+                          } else {
+                            throw new Error("Using fallback image");
+                          }
+                        } catch (err) {
+                          console.log("Using fallback image:", err.message);
                           // Fallback to data URI instead of placeholder.com
                           e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iI2VlZWVlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMThweCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzk5OTk5OSI+SW1hZ2UgTm90IEF2YWlsYWJsZTwvdGV4dD48L3N2Zz4=";
                         }
@@ -344,10 +363,22 @@ export default function Catalog() {
                             onError={(e) => {
                               // Similar error handling for thumbnails
                               const originalSrc = e.target.src;
-                              if (originalSrc.includes("localhost") || !originalSrc.includes("https://")) {
-                                const fixedUrl = `https://fitgearhub-backend.onrender.com${originalSrc.split('/media')[1]}`;
-                                e.target.src = fixedUrl;
-                              } else {
+                              try {
+                                if (originalSrc.includes("localhost") || !originalSrc.includes("https://")) {
+                                  // Extract path after /media/ if it exists
+                                  if (originalSrc.includes('/media/')) {
+                                    const mediaPath = originalSrc.split('/media/')[1];
+                                    const fixedUrl = `${MEDIA_BASE_URL}/media/${mediaPath}`;
+                                    console.log("Trying fixed thumbnail URL:", fixedUrl);
+                                    e.target.src = fixedUrl;
+                                  } else {
+                                    throw new Error("Cannot fix thumbnail URL - no media path");
+                                  }
+                                } else {
+                                  throw new Error("Using fallback thumbnail");
+                                }
+                              } catch (err) {
+                                console.log("Using fallback thumbnail:", err.message);
                                 // Fallback to data URI instead of placeholder.com
                                 e.target.src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZWVlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTBweCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZmlsbD0iIzk5OTk5OSI+Tm90IEF2YWlsYWJsZTwvdGV4dD48L3N2Zz4=";
                               }

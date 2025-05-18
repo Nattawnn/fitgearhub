@@ -151,19 +151,29 @@ STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Media files
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # For production on Render, we need to ensure media files persist
 # For a real production app, consider using S3, Cloudinary, or other storage services
 if not DEBUG:
-    # Ensure media directory exists and is writable
-    os.makedirs(MEDIA_ROOT, exist_ok=True)
-    
     # Set media files to be stored in a specific volume mount on Render
     if os.environ.get('RENDER_MOUNT_PATH'):
-        MEDIA_ROOT = os.path.join(os.environ.get('RENDER_MOUNT_PATH'), 'media')
+        RENDER_MOUNT_PATH = os.environ.get('RENDER_MOUNT_PATH')
+        MEDIA_ROOT = os.path.join(RENDER_MOUNT_PATH, 'media')
+        
+        # Ensure media directories exist
         os.makedirs(MEDIA_ROOT, exist_ok=True)
+        os.makedirs(os.path.join(MEDIA_ROOT, 'products'), exist_ok=True)
+        
+        print(f"Using persistent storage for media at: {MEDIA_ROOT}")
+    else:
+        print("WARNING: RENDER_MOUNT_PATH not set, media files will not persist!")
+
+# Additional media settings
+MEDIA_URL = '/media/'  # The URL to use when referring to media files
+FILE_UPLOAD_PERMISSIONS = 0o644  # Ensure uploaded files have correct permissions
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB - increasing this for larger file uploads
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
