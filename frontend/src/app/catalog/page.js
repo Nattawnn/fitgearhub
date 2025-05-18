@@ -318,6 +318,19 @@ export default function Catalog() {
                       src={product.images[activeImageIndexes[product.id] || 0].image}
                       alt={product.name} 
                       className="fitgear-catalog-product-image"
+                      onError={(e) => {
+                        console.error("Image failed to load:", e.target.src);
+                        // Try alternative URL
+                        const originalSrc = e.target.src;
+                        if (originalSrc.includes("localhost") || !originalSrc.includes("https://")) {
+                          // If using localhost or non-HTTPS, try the HTTPS URL from render
+                          const fixedUrl = `https://fitgearhub-backend.onrender.com${originalSrc.split('/media')[1]}`;
+                          e.target.src = fixedUrl;
+                        } else {
+                          // Fallback to placeholder
+                          e.target.src = "https://via.placeholder.com/400x400?text=Image+Not+Available";
+                        }
+                      }}
                     />
                     {product.images.length > 1 && (
                       <div className="fitgear-catalog-product-thumbnails">
@@ -328,6 +341,16 @@ export default function Catalog() {
                             alt={`${product.name} thumbnail ${index + 2}`}
                             className="fitgear-catalog-thumbnail"
                             onMouseEnter={() => handleImageHover(product.id, index + 1)}
+                            onError={(e) => {
+                              // Similar error handling for thumbnails
+                              const originalSrc = e.target.src;
+                              if (originalSrc.includes("localhost") || !originalSrc.includes("https://")) {
+                                const fixedUrl = `https://fitgearhub-backend.onrender.com${originalSrc.split('/media')[1]}`;
+                                e.target.src = fixedUrl;
+                              } else {
+                                e.target.src = "https://via.placeholder.com/100x100?text=Not+Available";
+                              }
+                            }}
                           />
                         ))}
                       </div>
