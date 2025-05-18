@@ -22,9 +22,11 @@ services:
         value: project_name.settings
       - key: DEBUG
         value: "0"
+      - key: RENDER_MOUNT_PATH
+        value: /opt/render/project/src/backend
     disk:
-      name: sqlite-data
-      mountPath: /opt/render/project/src/backend/db
+      name: fitgearhub-data
+      mountPath: /opt/render/project/src/backend
       sizeGB: 1
       # Temporarily comment out DATABASE_URL to use SQLite instead
       # - key: DATABASE_URL

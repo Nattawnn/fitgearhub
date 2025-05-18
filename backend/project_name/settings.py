@@ -154,6 +154,17 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# For production on Render, we need to ensure media files persist
+# For a real production app, consider using S3, Cloudinary, or other storage services
+if not DEBUG:
+    # Ensure media directory exists and is writable
+    os.makedirs(MEDIA_ROOT, exist_ok=True)
+    
+    # Set media files to be stored in a specific volume mount on Render
+    if os.environ.get('RENDER_MOUNT_PATH'):
+        MEDIA_ROOT = os.path.join(os.environ.get('RENDER_MOUNT_PATH'), 'media')
+        os.makedirs(MEDIA_ROOT, exist_ok=True)
+
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
