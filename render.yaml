@@ -15,8 +15,19 @@ services:
     name: fitgearhub-backend
     env: python
     plan: free
-    buildCommand: cd backend && pip install -r requirements.txt
-    startCommand: cd backend && python manage.py migrate --run-syncdb && python manage.py runserver 0.0.0.0:$PORT
+    buildCommand: >
+      cd backend && 
+      pip install -r requirements.txt && 
+      mkdir -p /opt/render/project/src/backend/media && 
+      mkdir -p /opt/render/project/src/backend/media/products && 
+      chmod -R 777 /opt/render/project/src/backend/media
+    startCommand: >
+      cd backend && 
+      mkdir -p $RENDER_MOUNT_PATH/media && 
+      mkdir -p $RENDER_MOUNT_PATH/media/products && 
+      chmod -R 777 $RENDER_MOUNT_PATH/media && 
+      python manage.py migrate --run-syncdb && 
+      python manage.py runserver 0.0.0.0:$PORT
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: project_name.settings

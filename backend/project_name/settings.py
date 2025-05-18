@@ -150,28 +150,50 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-# Media files
-MEDIA_URL = '/media/'
+# Media files - Force settings for production compatibility
+MEDIA_URL = '/media/'  # Always use leading slash for consistent URLs
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# Print media settings for debugging
+print(f"BASE_DIR: {BASE_DIR}")
+print(f"Initial MEDIA_ROOT: {MEDIA_ROOT}")
+
+# Ensure base media directories exist
+os.makedirs(MEDIA_ROOT, exist_ok=True)
+os.makedirs(os.path.join(MEDIA_ROOT, 'products'), exist_ok=True)
+
 # For production on Render, we need to ensure media files persist
-# For a real production app, consider using S3, Cloudinary, or other storage services
 if not DEBUG:
     # Set media files to be stored in a specific volume mount on Render
     if os.environ.get('RENDER_MOUNT_PATH'):
         RENDER_MOUNT_PATH = os.environ.get('RENDER_MOUNT_PATH')
         MEDIA_ROOT = os.path.join(RENDER_MOUNT_PATH, 'media')
         
-        # Ensure media directories exist
+        # Ensure media directories exist - create with full permissions
         os.makedirs(MEDIA_ROOT, exist_ok=True)
         os.makedirs(os.path.join(MEDIA_ROOT, 'products'), exist_ok=True)
         
+        # Set permissions for the directories
+        try:
+            import stat
+            os.chmod(MEDIA_ROOT, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)  # 0777 permissions
+            os.chmod(os.path.join(MEDIA_ROOT, 'products'), stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
+        except Exception as e:
+            print(f"Warning: Could not set permissions on media directories: {e}")
+        
         print(f"Using persistent storage for media at: {MEDIA_ROOT}")
+        # List contents of the media directory for debugging
+        try:
+            print(f"Media root exists: {os.path.exists(MEDIA_ROOT)}")
+            print(f"Products dir exists: {os.path.exists(os.path.join(MEDIA_ROOT, 'products'))}")
+            print(f"Contents of {MEDIA_ROOT}: {os.listdir(MEDIA_ROOT)}")
+            print(f"Contents of {os.path.join(MEDIA_ROOT, 'products')}: {os.listdir(os.path.join(MEDIA_ROOT, 'products'))}")
+        except Exception as e:
+            print(f"Error listing media directory contents: {e}")
     else:
         print("WARNING: RENDER_MOUNT_PATH not set, media files will not persist!")
 
 # Additional media settings
-MEDIA_URL = '/media/'  # The URL to use when referring to media files
 FILE_UPLOAD_PERMISSIONS = 0o644  # Ensure uploaded files have correct permissions
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB - increasing this for larger file uploads
 
